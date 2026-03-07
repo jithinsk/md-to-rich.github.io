@@ -2,6 +2,7 @@
 id: ansi-theme
 title: ANSI Theme
 sidebar_label: ANSI Theme
+description: Customise the ANSI terminal theme in toAnsi() using the AnsiTheme interface. Override headings, bullets, HR characters, and colours with monochrome and fun theme examples.
 ---
 
 # ANSI Theme

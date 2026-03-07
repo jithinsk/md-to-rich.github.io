@@ -1,7 +1,8 @@
 ---
 id: prosemirror-slate
-title: ProseMirror / Slate
+title: ProseMirror / Slate Adapter Guide
 sidebar_label: ProseMirror / Slate
+description: Map md-to-rich DocTree output to ProseMirror nodes, Slate elements, and Quill Delta operations. Complete TypeScript adapter examples with flat inline mark handling.
 ---
 
 # ProseMirror / Slate Adapter Guide

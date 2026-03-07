@@ -2,6 +2,7 @@
 id: remark-plugins
 title: remark Plugins
 sidebar_label: remark Plugins
+description: Inject remark plugins into the md-to-rich pipeline to transform the MDAST before serialization. Examples with uppercaseHeadings, remark-frontmatter, and more.
 ---
 
 # remark Plugins

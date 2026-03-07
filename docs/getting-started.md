@@ -3,6 +3,7 @@ id: getting-started
 title: Getting Started
 sidebar_label: Getting Started
 slug: /getting-started
+description: Install md-to-rich and convert Markdown to HTML, ANSI terminal output, or a Doc Tree in seconds. Quick start guide with examples for all three built-in serializers.
 ---
 
 # Getting Started

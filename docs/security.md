@@ -2,6 +2,7 @@
 id: security
 title: Security
 sidebar_label: Security
+description: URL sanitisation, blocked protocols (javascript:, data:, vbscript:), and XSS considerations for md-to-rich HTML output. Always-on protection with no configuration required.
 ---
 
 # Security

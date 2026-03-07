@@ -2,6 +2,7 @@
 id: to-ansi
 title: toAnsi()
 sidebar_label: toAnsi()
+description: toAnsi() API reference — convert Markdown to ANSI-escaped terminal output with configurable columns, custom themes, word-wrap, and OSC 8 hyperlink support.
 ---
 
 # `toAnsi(md, options?): string`

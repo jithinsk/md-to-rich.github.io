@@ -6,9 +6,30 @@ const config: Config = {
   title: 'md-to-rich',
   tagline: 'Convert Markdown to HTML, ANSI terminal output, and Doc Tree',
   favicon: 'img/logo.svg',
+  headTags: [
+    {
+      tagName: 'script',
+      attributes: { type: 'application/ld+json' },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'md-to-rich',
+        applicationCategory: 'DeveloperApplication',
+        description: 'Convert Markdown to HTML, ANSI terminal output, and Doc Tree via an extensible Serializer interface. TypeScript-first, tree-shakeable, ESM + CJS dual output.',
+        url: 'https://md-to-rich.jithins.dev/',
+        downloadUrl: 'https://www.npmjs.com/package/md-to-rich',
+        softwareVersion: '1.0.2',
+        operatingSystem: 'Node.js ≥ 18',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        author: { '@type': 'Person', name: 'Jithin Sebastian' },
+        license: 'https://opensource.org/licenses/MIT',
+        codeRepository: 'https://github.com/jithinsk/md-to-rich.github.io',
+      }),
+    },
+  ],
 
-  url: 'https://jithinsk.github.io',
-  baseUrl: '/md-to-rich.github.io/',
+  url: 'https://md-to-rich.jithins.dev',
+  baseUrl: '/',
 
   organizationName: 'jithinsk',
   projectName: 'md-to-rich.github.io',
@@ -38,12 +59,36 @@ const config: Config = {
         sitemap: {
           changefreq: 'weekly',
           priority: 0.5,
+          createSitemapItems: async (params) => {
+            const { defaultCreateSitemapItems, ...rest } = params
+            const items = await defaultCreateSitemapItems(rest)
+            return items.map((item) => {
+              if (item.url === 'https://md-to-rich.jithins.dev/') {
+                return { ...item, priority: 1.0, changefreq: 'monthly' }
+              }
+              if (item.url.includes('/getting-started') || item.url.includes('/api/')) {
+                return { ...item, priority: 0.9 }
+              }
+              if (item.url.includes('/guides/')) {
+                return { ...item, priority: 0.8 }
+              }
+              return item
+            })
+          },
         },
       } satisfies Preset.Options,
     ],
   ],
 
   themeConfig: {
+    image: 'img/social-card.svg',
+    metadata: [
+      { name: 'keywords', content: 'markdown, html, ansi, terminal, doc-tree, rich-text, serializer, remark, mdast, gfm, prosemirror, slate, typescript, npm' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:site_name', content: 'md-to-rich' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:site', content: '@jithinsk' },
+    ],
     colorMode: {
       respectPrefersColorScheme: true,
     },

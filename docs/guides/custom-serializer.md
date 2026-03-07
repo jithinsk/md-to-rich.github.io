@@ -2,6 +2,7 @@
 id: custom-serializer
 title: Custom Serializer
 sidebar_label: Custom Serializer
+description: Build a custom Serializer<T> for md-to-rich in 4 steps. Full examples for a PlainText extractor and a WordCount serializer with typed options.
 ---
 
 # Building a Custom Serializer

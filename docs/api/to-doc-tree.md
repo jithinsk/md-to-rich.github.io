@@ -2,6 +2,7 @@
 id: to-doc-tree
 title: toDocTree()
 sidebar_label: toDocTree()
+description: toDocTree() API reference — convert Markdown to a typed DocDocument JSON tree, ready to map into ProseMirror, Slate, Quill, or any rich-text editor schema.
 ---
 
 # `toDocTree(md, options?): DocDocument`

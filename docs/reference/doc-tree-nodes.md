@@ -2,6 +2,7 @@
 id: doc-tree-nodes
 title: Doc Tree Node Types
 sidebar_label: Doc Tree Node Types
+description: Complete TypeScript interface reference for all DocTree node types — DocDocument, DocHeading, DocText, DocLink, DocImage, DocTable, and all union type aliases.
 ---
 
 # Doc Tree Node Types

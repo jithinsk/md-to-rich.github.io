@@ -2,6 +2,7 @@
 id: to-html
 title: toHtml()
 sidebar_label: toHtml()
+description: toHtml() API reference — convert Markdown to HTML with heading IDs, custom CSS class names, GFM tables, task lists, and built-in URL sanitisation.
 ---
 
 # `toHtml(md, options?): string`

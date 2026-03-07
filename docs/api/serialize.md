@@ -2,6 +2,7 @@
 id: serialize
 title: serialize()
 sidebar_label: serialize()
+description: serialize() API reference — generic Markdown dispatch function that works with any Serializer<T> implementation. Parse once, output to any format.
 ---
 
 # `serialize(md, serializer, options?): T`

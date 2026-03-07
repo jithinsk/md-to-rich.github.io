@@ -2,6 +2,7 @@
 id: html-classnames
 title: HTML Class Names
 sidebar_label: HTML Class Names
+description: Inject custom CSS class names per HTML element using the classNames option in toHtml(). Includes Tailwind CSS and BEM examples for every supported element.
 ---
 
 # HTML Class Names
