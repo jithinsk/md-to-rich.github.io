@@ -1,0 +1,39 @@
+/**
+ * md-to-rich brand color ramp (light mode)
+ * Primary: indigo #5a67d8
+ */
+:root {
+  --ifm-color-primary: #5a67d8;
+  --ifm-color-primary-dark: #4a55c8;
+  --ifm-color-primary-darker: #4350c0;
+  --ifm-color-primary-darkest: #3540a0;
+  --ifm-color-primary-light: #6a77e2;
+  --ifm-color-primary-lighter: #717ee5;
+  --ifm-color-primary-lightest: #8d99ed;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(90, 103, 216, 0.1);
+}
+
+/**
+ * Dark mode overrides
+ * Primary: lighter indigo #818cf8
+ */
+[data-theme='dark'] {
+  --ifm-color-primary: #818cf8;
+  --ifm-color-primary-dark: #6a76f6;
+  --ifm-color-primary-darker: #5e6bf5;
+  --ifm-color-primary-darkest: #3a49f2;
+  --ifm-color-primary-light: #98a2fa;
+  --ifm-color-primary-lighter: #a4adfb;
+  --ifm-color-primary-lightest: #c4cafd;
+  --docusaurus-highlighted-code-line-bg: rgba(129, 140, 248, 0.15);
+}
+
+/* Tighter table font for API option tables */
+table {
+  font-size: 0.9rem;
+}
+
+table code {
+  font-size: 0.85rem;
+}
