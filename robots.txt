@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://md-to-rich.jithins.dev/sitemap.xml

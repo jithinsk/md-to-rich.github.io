@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3540a0"/>
+      <stop offset="100%" style="stop-color:#5a67d8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle grid pattern -->
+  <rect width="1200" height="630" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1">
+    <animateTransform attributeName="transform" type="translate" values="0,0" dur="0s"/>
+  </rect>
+
+  <!-- Logo box -->
+  <rect x="80" y="80" width="80" height="80" rx="16" fill="rgba(255,255,255,0.15)"/>
+  <text x="120" y="132" font-family="monospace" font-size="32" font-weight="bold" text-anchor="middle" fill="white">&lt;/&gt;</text>
+
+  <!-- Title -->
+  <text x="80" y="300" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="96" font-weight="800" fill="white">md-to-rich</text>
+
+  <!-- Tagline -->
+  <text x="80" y="370" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="32" fill="rgba(255,255,255,0.85)">Convert Markdown to HTML, ANSI terminal output, and Doc Tree</text>
+
+  <!-- Pills -->
+  <rect x="80" y="430" width="130" height="44" rx="22" fill="rgba(255,255,255,0.15)"/>
+  <text x="145" y="458" font-family="monospace" font-size="20" text-anchor="middle" fill="white">HTML</text>
+
+  <rect x="226" y="430" width="130" height="44" rx="22" fill="rgba(255,255,255,0.15)"/>
+  <text x="291" y="458" font-family="monospace" font-size="20" text-anchor="middle" fill="white">ANSI</text>
+
+  <rect x="372" y="430" width="160" height="44" rx="22" fill="rgba(255,255,255,0.15)"/>
+  <text x="452" y="458" font-family="monospace" font-size="20" text-anchor="middle" fill="white">Doc Tree</text>
+
+  <!-- npm badge area -->
+  <text x="80" y="560" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="24" fill="rgba(255,255,255,0.6)">npm install md-to-rich</text>
+
+  <!-- Right side code snippet -->
+  <rect x="680" y="180" width="460" height="280" rx="12" fill="rgba(0,0,0,0.3)"/>
+  <text x="710" y="228" font-family="monospace" font-size="18" fill="#a5b4fc">import</text>
+  <text x="771" y="228" font-family="monospace" font-size="18" fill="white"> { toHtml, toAnsi } </text>
+  <text x="710" y="258" font-family="monospace" font-size="18" fill="#a5b4fc">  from</text>
+  <text x="755" y="258" font-family="monospace" font-size="18" fill="#fbbf24"> 'md-to-rich'</text>
+  <text x="710" y="308" font-family="monospace" font-size="18" fill="#34d399">toHtml</text>
+  <text x="764" y="308" font-family="monospace" font-size="18" fill="white">('# Hello')</text>
+  <text x="710" y="338" font-family="monospace" font-size="18" fill="rgba(255,255,255,0.4)">// &lt;h1 id="hello"&gt;Hello&lt;/h1&gt;</text>
+  <text x="710" y="388" font-family="monospace" font-size="18" fill="#34d399">toAnsi</text>
+  <text x="764" y="388" font-family="monospace" font-size="18" fill="white">('# Hello')</text>
+  <text x="710" y="418" font-family="monospace" font-size="18" fill="rgba(255,255,255,0.4)">// ANSI terminal output</text>
+</svg>
