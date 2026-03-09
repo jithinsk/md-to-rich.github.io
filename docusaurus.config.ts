@@ -114,6 +114,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           position: 'left',
           label: 'Docs',
         },
+        { to: '/playground', label: 'Playground', position: 'left' },
         {
           href: 'https://www.npmjs.com/package/md-to-rich',
           label: 'npm',
