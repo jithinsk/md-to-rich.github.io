@@ -22,7 +22,7 @@
 /* Split pane */
 .splitPane {
   display: grid;
-  grid-template-columns: 45fr 55fr;
+  grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
   gap: 1.5rem;
   height: 72vh;
 }
@@ -43,6 +43,7 @@
   border-radius: 8px;
   overflow: hidden;
   min-height: 0;
+  min-width: 0;
 }
 
 @media (max-width: 768px) {
