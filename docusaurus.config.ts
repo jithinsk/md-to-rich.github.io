@@ -32,7 +32,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
         author: { '@type': 'Person', name: 'Jithin Sebastian' },
         license: 'https://opensource.org/licenses/MIT',
-        codeRepository: 'https://github.com/jithinsk/md-to-rich.github.io',
+        codeRepository: 'https://github.com/jithinsk/markdown-to-richtext',
       }),
     },
   ],
@@ -58,7 +58,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/jithinsk/md-to-rich.github.io/tree/main/',
+          editUrl: 'https://github.com/jithinsk/markdown-to-richtext/tree/main/',
           routeBasePath: 'docs',
         },
         blog: false,
@@ -121,7 +121,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           position: 'right',
         },
         {
-          href: 'https://github.com/jithinsk/md-to-rich.github.io',
+          href: 'https://github.com/jithinsk/markdown-to-richtext',
           label: 'GitHub',
           position: 'right',
         },
@@ -143,7 +143,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {
           title: 'More',
           items: [
-            { label: 'GitHub', href: 'https://github.com/jithinsk/md-to-rich.github.io' },
+            { label: 'GitHub', href: 'https://github.com/jithinsk/markdown-to-richtext' },
             { label: 'npm', href: 'https://www.npmjs.com/package/md-to-rich' },
             { label: 'Changelog', to: '/docs/changelog' },
             { label: 'Security', to: '/docs/security' },

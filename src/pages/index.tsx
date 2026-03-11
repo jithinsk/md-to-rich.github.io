@@ -95,7 +95,7 @@ export default function Home(): React.JSX.Element {
             </Link>
             <Link
               className={styles.btnOutline}
-              href="https://github.com/jithinsk/md-to-rich.github.io"
+              href="https://github.com/jithinsk/markdown-to-richtext"
             >
               GitHub
             </Link>
