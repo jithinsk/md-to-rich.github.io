@@ -18,6 +18,18 @@ updates:
     commit-message:
       prefix: chore
       include: scope
+    ignore:
+      # TypeScript 7 removed the `baseUrl` compiler option that tsconfig.json
+      # still sets, so `tsc --noEmit` fails with TS5102. Unlike the library's
+      # blocker this is fixable here — swap baseUrl for `"paths": {"*": ["./*"]}`
+      # — but Docusaurus has not yet declared TypeScript 7 support, so the
+      # upgrade is deferred rather than papered over.
+      # Remove this entry when taking TypeScript 7 on deliberately. Minor and
+      # patch updates within 5.x still come through.
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
+
     groups:
       # md-to-rich is intentionally not ignored: the playground should demo the
       # current release, and CI proves the site still builds against it.
