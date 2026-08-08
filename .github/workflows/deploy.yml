@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  # Invoked by sync-library.yml, whose own push cannot trigger the event above.
+  workflow_call:
 
 permissions:
   contents: write

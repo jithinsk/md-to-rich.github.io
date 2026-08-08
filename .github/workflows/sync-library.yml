@@ -1,0 +1,82 @@
+name: Sync md-to-rich
+
+# Keeps the playground on the latest published md-to-rich release.
+#
+# The library's release workflow dispatches here immediately after `npm
+# publish`. The schedule is a safety net: if the dispatch never arrives —
+# missing token, failed release step, manual publish — the site still
+# converges on its own.
+on:
+  repository_dispatch:
+    types: [md-to-rich-released]
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Never let two syncs race on the same push.
+concurrency:
+  group: sync-md-to-rich
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Check for a new release
+    runs-on: ubuntu-latest
+    outputs:
+      updated: ${{ steps.check.outputs.updated }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Compare declared range against the latest release
+        id: check
+        run: |
+          LATEST="$(npm view md-to-rich version)"
+          CURRENT="$(node -p "require('./package.json').dependencies['md-to-rich']")"
+          echo "declared: ${CURRENT} | latest on npm: ${LATEST}"
+          if [ "$CURRENT" = "^${LATEST}" ]; then
+            echo "Already current."
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+            echo "version=${LATEST}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Bump to the latest release
+        if: steps.check.outputs.updated == 'true'
+        env:
+          VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          npm install "md-to-rich@${VERSION}"
+
+          # Keep the schema.org metadata advertising the same version the
+          # playground actually runs.
+          sed -i -E "s/softwareVersion: '[^']*'/softwareVersion: '${VERSION}'/" docusaurus.config.ts
+
+          # Prove the site still builds against the new release before
+          # anything is committed or deployed.
+          npm run typecheck
+          npm run build
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json docusaurus.config.ts
+          git commit -m "chore: upgrade playground to md-to-rich ${VERSION}"
+          git push
+
+  # Called explicitly: the push above uses GITHUB_TOKEN, and GitHub suppresses
+  # workflow runs triggered by it, so deploy.yml's push trigger never fires.
+  deploy:
+    needs: sync
+    if: needs.sync.outputs.updated == 'true'
+    permissions:
+      contents: write
+    uses: ./.github/workflows/deploy.yml

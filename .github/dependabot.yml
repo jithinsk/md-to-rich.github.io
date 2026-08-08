@@ -30,10 +30,12 @@ updates:
         update-types:
           - version-update:semver-major
 
+      # Owned by sync-library.yml, which bumps this the moment a release hits
+      # npm and deploys the result. Leaving it to Dependabot as well would race
+      # two mechanisms against the same dependency.
+      - dependency-name: md-to-rich
+
     groups:
-      # md-to-rich is intentionally not ignored: the playground should demo the
-      # current release, and CI proves the site still builds against it.
-      #
       # Docusaurus core/preset/tsconfig/types are released in lockstep and are
       # pinned to exact versions here — they must move together or the build
       # breaks on mismatched internals.
