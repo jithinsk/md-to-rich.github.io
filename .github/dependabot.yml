@@ -1,0 +1,56 @@
+version: 2
+
+updates:
+  # ---------------------------------------------------------------------------
+  # Docusaurus site dependencies
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Kolkata
+    open-pull-requests-limit: 5
+    versioning-strategy: increase
+    labels:
+      - dependencies
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      # Docusaurus core/preset/tsconfig/types are released in lockstep and are
+      # pinned to exact versions here — they must move together or the build
+      # breaks on mismatched internals.
+      docusaurus:
+        patterns:
+          - "@docusaurus/*"
+      minor-and-patch:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@docusaurus/*"
+        update-types:
+          - minor
+          - patch
+
+  # ---------------------------------------------------------------------------
+  # Actions used by deploy.yml and ci.yml
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Kolkata
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns:
+          - "*"
