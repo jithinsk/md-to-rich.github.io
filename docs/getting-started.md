@@ -14,7 +14,7 @@ description: Install md-to-rich and convert Markdown to HTML, ANSI terminal outp
 npm install md-to-rich
 ```
 
-Requires Node.js ≥ 18.
+Requires Node.js ≥ 20.
 
 ---
 
