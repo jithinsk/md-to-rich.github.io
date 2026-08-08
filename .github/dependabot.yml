@@ -28,11 +28,24 @@ updates:
       docusaurus:
         patterns:
           - "@docusaurus/*"
+      # react-dom declares an exact peer on react, so split major PRs can never
+      # install — each one fails npm ci against the other's old version. No
+      # update-types filter: majors must travel together too.
+      react:
+        patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
       minor-and-patch:
         patterns:
           - "*"
         exclude-patterns:
           - "@docusaurus/*"
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
         update-types:
           - minor
           - patch
