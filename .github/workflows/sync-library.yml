@@ -70,13 +70,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add package.json package-lock.json docusaurus.config.ts
           git commit -m "chore: upgrade playground to md-to-rich ${VERSION}"
-          git push
-
-  # Called explicitly: the push above uses GITHUB_TOKEN, and GitHub suppresses
-  # workflow runs triggered by it, so deploy.yml's push trigger never fires.
-  deploy:
-    needs: sync
-    if: needs.sync.outputs.updated == 'true'
-    permissions:
-      contents: write
-    uses: ./.github/workflows/deploy.yml
+          git push  # Cloudflare Pages deploys main on every push, including this one.
