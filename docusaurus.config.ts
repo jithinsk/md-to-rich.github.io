@@ -57,35 +57,24 @@ const config: Config = {
           customCss: './src/css/custom.css',
         },
         sitemap: {
-          changefreq: 'weekly',
-          priority: 0.5,
-          createSitemapItems: async (params) => {
-            const { defaultCreateSitemapItems, ...rest } = params
-            const items = await defaultCreateSitemapItems(rest)
-            return items.map((item) => {
-              if (item.url === 'https://md-to-rich.jithins.dev/') {
-                return { ...item, priority: 1.0, changefreq: 'monthly' }
-              }
-              if (item.url.includes('/getting-started') || item.url.includes('/api/')) {
-                return { ...item, priority: 0.9 }
-              }
-              if (item.url.includes('/guides/')) {
-                return { ...item, priority: 0.8 }
-              }
-              return item
-            })
-          },
+          lastmod: 'date',
+          // Google ignores changefreq and priority, so omit them.
+          changefreq: null,
+          priority: null,
         },
       } satisfies Preset.Options,
     ],
   ],
 
   themeConfig: {
-    image: 'img/social-card.svg',
+    image: 'img/social-card.png',
     metadata: [
       { name: 'keywords', content: 'markdown, html, ansi, terminal, doc-tree, rich-text, serializer, remark, mdast, gfm, prosemirror, slate, typescript, npm' },
       { property: 'og:type', content: 'website' },
       { property: 'og:site_name', content: 'md-to-rich' },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { property: 'og:image:alt', content: 'md-to-rich: convert Markdown to HTML, ANSI terminal output, and Doc Tree' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:site', content: '@jithinsk' },
     ],

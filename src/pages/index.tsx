@@ -83,7 +83,10 @@ const result = serialize('# Hello\\n\\nThis is **bold** text.', PlainText)
 export default function Home(): React.JSX.Element {
   const { siteConfig } = useDocusaurusContext()
   return (
-    <Layout description={siteConfig.tagline}>
+    <Layout
+      title="Markdown to HTML, ANSI & Rich-Text JSON"
+      description="md-to-rich is a TypeScript library that converts Markdown to HTML, ANSI terminal output, and a typed Doc Tree for ProseMirror, Slate, and Quill editors."
+    >
       {/* Hero */}
       <header className={styles.hero}>
         <div className="container">
