@@ -38,8 +38,21 @@ jobs:
 
       - name: Compare declared range against the latest release
         id: check
+        env:
+          # Set when the library's release workflow dispatches here.
+          RELEASED: ${{ github.event.client_payload.version }}
         run: |
-          LATEST="$(npm view md-to-rich version)"
+          if [ -n "$RELEASED" ]; then
+            # The dispatch fires seconds after publishing, before the registry
+            # serves the new version; wait for it rather than seeing the old one.
+            for _ in $(seq 1 30); do
+              npm view "md-to-rich@${RELEASED}" version >/dev/null 2>&1 && break
+              sleep 10
+            done
+            LATEST="$RELEASED"
+          else
+            LATEST="$(npm view md-to-rich version)"
+          fi
           CURRENT="$(node -p "require('./package.json').dependencies['md-to-rich']")"
           echo "declared: ${CURRENT} | latest on npm: ${LATEST}"
           if [ "$CURRENT" = "^${LATEST}" ]; then
