@@ -20,14 +20,14 @@ Choose md-to-rich when one Markdown source has to become safe HTML, ANSI termina
 | Rich-text JSON for editors | ✅ generic Doc Tree | ❌ (tokens only) | ❌ (tokens only) | ❌ (MDAST only) | ❌ | ✅ ProseMirror only | ✅ Slate only |
 | Bundled TypeScript types | ✅ | ✅ | ✅ | ✅ | ❌ (`@types/marked-terminal`) | ✅ | ✅ |
 | GFM tables and task lists | ✅ | ✅ | Tables ✅, tasks via plugin | via plugin (remark-gfm) | ✅ | ❌ by default | ❌ |
-| URL sanitisation / raw HTML handling | ✅ HTML output; ❌ Doc Tree URLs | ❌ | ✅ | remark-html ✅; remark-rehype needs rehype-sanitize | n/a (terminal) | ✅ (via markdown-it) | ❌ |
+| URL sanitisation / raw HTML handling | ✅ always on | ❌ | ✅ | remark-html ✅; remark-rehype needs rehype-sanitize | n/a (terminal) | ✅ (via markdown-it) | ❌ |
 | Plugin ecosystem | remark plugins | ✅ | ✅ | ✅ largest | ❌ | markdown-it plugins | remark plugins |
 | Custom output formats | ✅ `Serializer` interface | ✅ custom renderer | ✅ renderer rules | ✅ | ❌ | ❌ | Node names only |
 | Serialise back to Markdown | ❌ | ❌ | ❌ | ✅ (remark-stringify) | ❌ | ✅ | ✅ |
 
 Notes on the less obvious cells:
 
-- **Sanitisation.** In HTML output, md-to-rich replaces `javascript:`, `data:` and `vbscript:` URLs with `#` and strips raw HTML unless you opt in. Doc Tree URLs are passed through unchanged, so editor adapters must check them. See [Security](/docs/security). marked passes both `javascript:` links and raw HTML through unchanged; its README tells you to sanitise the output with a library such as DOMPurify. markdown-it refuses to turn `javascript:` URLs into links and escapes raw HTML by default (`html: false`). remark-html sanitises by default. remark-rehype drops raw HTML but keeps `javascript:` hrefs unless you add rehype-sanitize. remark-slate passes `javascript:` URLs straight into the Slate value.
+- **Sanitisation.** In HTML output, md-to-rich replaces `javascript:`, `data:` and `vbscript:` URLs with `#` and strips raw HTML unless you opt in. Doc Tree link and image URLs get the same treatment (since 2.0.1). See [Security](/docs/security). marked passes both `javascript:` links and raw HTML through unchanged; its README tells you to sanitise the output with a library such as DOMPurify. markdown-it refuses to turn `javascript:` URLs into links and escapes raw HTML by default (`html: false`). remark-html sanitises by default. remark-rehype drops raw HTML but keeps `javascript:` hrefs unless you add rehype-sanitize. remark-slate passes `javascript:` URLs straight into the Slate value.
 - **GFM in prosemirror-markdown and remark-slate.** The default prosemirror-markdown parser uses markdown-it's `commonmark` preset with a CommonMark-only schema, so tables and task lists need a custom schema and parser. remark-slate (tested with remark-parse 11 and remark-gfm) drops tables and loses task-list checked state.
 - **Types.** markdown-it bundles its own types as of v15. Older versions use `@types/markdown-it`. marked-terminal ships no types. The community `@types/marked-terminal` package targets older marked releases.
 - **"Generic" Doc Tree.** md-to-rich's Doc Tree isn't any editor's native format. You map it to ProseMirror, Slate or Quill with a small adapter. prosemirror-markdown and remark-slate produce native documents directly.
@@ -35,7 +35,7 @@ Notes on the less obvious cells:
 ## Choose md-to-rich if…
 
 - You need **more than one output** from the same Markdown, such as HTML for the web, ANSI for a CLI and JSON for an editor, and want them to agree on how Markdown is parsed.
-- You render **untrusted Markdown to HTML** and want dangerous URLs and raw HTML handled without extra setup.
+- You render **untrusted Markdown** and want dangerous URLs and raw HTML handled without extra setup.
 - You want **typed JSON** you can walk with exhaustive `switch` statements instead of a token stream.
 - You want to write your **own output format** against a small `Serializer` interface while still using remark plugins upstream.
 

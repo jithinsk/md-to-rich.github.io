@@ -284,7 +284,7 @@ Each `switch` ends in a `default` branch that returns `[]`, so a node type added
 
 ### Are link and image URLs safe to render?
 
-Don't rely on it. In md-to-rich 2.0.0, `toDocTree()` passes URLs through exactly as written, so `[x](javascript:alert(1))` reaches your adapter unchanged. `safeUrl()` keeps relative URLs, fragments and `http`, `https`, `mailto` and `tel` links, and replaces everything else with `#`. Customise the allow-list if you need more schemes, such as `data:image/` for inline images.
+Yes, from md-to-rich 2.0.1: `toDocTree()` replaces `javascript:`, `data:` and other unsafe URLs with `#`. In 2.0.0 and earlier they passed through as written, so the adapter checks them again as a second layer. `safeUrl()` keeps relative URLs, fragments and `http`, `https`, `mailto` and `tel` links, and replaces everything else with `#`. Customise the allow-list if you need more schemes, such as `data:image/` for inline images.
 
 ### Why do some list items start with an empty paragraph?
 

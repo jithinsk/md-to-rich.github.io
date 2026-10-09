@@ -11,13 +11,13 @@ md-to-rich treats Markdown as untrusted input by default: dangerous link protoco
 
 ## URL Sanitisation
 
-URL sanitisation is **always on** in `toHtml()`. You cannot disable it.
+URL sanitisation is **always on** in `toHtml()` and `toDocTree()`. You cannot disable it.
 
-Any `href` (links) or `src` (images) attribute containing a dangerous protocol is replaced with `#` in the HTML output.
+Any `href` (links) or `src` (images) attribute containing a dangerous protocol is replaced with `#` in HTML output, and the same replacement is applied to `url` on Doc Tree link and image nodes.
 
-:::warning Doc Tree URLs are not sanitised
+:::warning Upgrade to 2.0.1 or later
 
-`toDocTree()` returns link and image URLs exactly as they appear in the Markdown, so `[x](javascript:alert(1))` produces `url: 'javascript:alert(1)'`. Check URLs before you render them or load them into an editor. The [ProseMirror](/docs/guides/markdown-to-prosemirror), [Slate](/docs/guides/markdown-to-slate), and [Quill](/docs/guides/markdown-to-quill) guides each include a small `safeUrl()` allow-list for this.
+In md-to-rich 2.0.0 and earlier, `toDocTree()` returned link and image URLs exactly as written, so `[x](javascript:alert(1))` produced `url: 'javascript:alert(1)'`. Upgrade to 2.0.1 or later if you render Doc Tree output from untrusted Markdown. The [ProseMirror](/docs/guides/markdown-to-prosemirror), [Slate](/docs/guides/markdown-to-slate), and [Quill](/docs/guides/markdown-to-quill) guides also include a small `safeUrl()` check as a second layer.
 
 :::
 
@@ -74,4 +74,4 @@ By default (`allowRawHtml: false`), raw HTML nodes in Markdown are stripped from
 ## Related
 
 - [toHtml() API](/docs/api/to-html): the allowRawHtml option and its risks
-- [toDocTree() API](/docs/api/to-doc-tree): JSON output, where URLs are returned unchanged
+- [toDocTree() API](/docs/api/to-doc-tree): JSON output with sanitised URLs

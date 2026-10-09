@@ -321,7 +321,7 @@ Code lines carry the fence's info string, or `'plain'` when there is none, becau
 
 ### Unsafe URLs are replaced
 
-`safeUrl()` allow-lists link and image URLs (`http`, `https`, `mailto`, `tel` and relative URLs) and turns anything else, such as `javascript:` or `data:`, into `#`.
+`toDocTree()` already replaces unsafe link and image URLs with `#` (since md-to-rich 2.0.1). `safeUrl()` checks them again as a second layer: it allow-lists `http`, `https`, `mailto`, `tel` and relative URLs and turns anything else, such as `javascript:` or `data:`, into `#`.
 
 ## FAQ
 

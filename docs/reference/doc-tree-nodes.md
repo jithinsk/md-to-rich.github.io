@@ -215,7 +215,7 @@ interface DocLink {
 }
 ```
 
-`url` is returned exactly as written in the Markdown and is **not** sanitised. Check it before rendering (see [Security](/docs/security)).
+`url` is sanitised: dangerous protocols such as `javascript:` are replaced with `#` (since 2.0.1; see [Security](/docs/security)).
 
 ---
 
@@ -230,7 +230,7 @@ interface DocImage {
 }
 ```
 
-`url` is returned exactly as written and is **not** sanitised.
+`url` is sanitised the same way (since 2.0.1).
 
 ---
 

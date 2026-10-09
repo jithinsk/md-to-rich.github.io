@@ -143,7 +143,7 @@ md-view/
     "build": "tsc"
   },
   "dependencies": {
-    "md-to-rich": "^2.0.0"
+    "md-to-rich": "^2.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
