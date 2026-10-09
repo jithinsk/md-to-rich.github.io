@@ -186,7 +186,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} <a href="https://github.com/jithinsk">Jithin Sebastian</a>. Built with Docusaurus.`,
+      copyright: `© ${new Date().getFullYear()} Jithin Sebastian · <a href="https://github.com/jithinsk/markdown-to-richtext/blob/main/LICENSE">MIT License</a> · <a href="https://github.com/jithinsk/markdown-to-richtext">GitHub</a>`,
     },
     prism: {
       theme: prismThemes.github,
