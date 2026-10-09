@@ -1,11 +1,11 @@
 import { createHash } from 'node:crypto'
-import { appendFileSync, readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Plugin } from '@docusaurus/types'
 
-// Ship the policy as Report-Only first; switch to false once the live site
-// shows no violations in the browser console.
-const REPORT_ONLY = true
+// Set to true to trial policy changes as Content-Security-Policy-Report-Only
+// before enforcing them.
+const REPORT_ONLY = false
 
 const INLINE_SCRIPT = /<script(?![^>]*\bsrc=)(?![^>]*application\/ld\+json)[^>]*>([\s\S]*?)<\/script>/g
 
@@ -47,7 +47,16 @@ export default function cspHeaders(): Plugin {
       ].join('; ')
 
       const header = REPORT_ONLY ? 'Content-Security-Policy-Report-Only' : 'Content-Security-Policy'
-      appendFileSync(join(outDir, '_headers'), `\n/*\n  ${header}: ${policy}\n`)
+      const line = `  ${header}: ${policy}`
+
+      // Cloudflare Pages applies only one block per identical path, so add the
+      // policy to the existing /* block rather than appending a second one.
+      const file = join(outDir, '_headers')
+      const headers = readFileSync(file, 'utf8')
+      const updated = /^\/\*$/m.test(headers)
+        ? headers.replace(/^\/\*$/m, `/*\n${line}`)
+        : `${headers}\n/*\n${line}\n`
+      writeFileSync(file, updated)
     },
   }
 }
