@@ -1,0 +1,5 @@
+# Cloudflare Pages redirects.
+
+# The combined ProseMirror / Slate guide was split into per-editor guides.
+/docs/guides/prosemirror-slate     /docs/guides/markdown-to-prosemirror     301
+/docs/guides/prosemirror-slate.md  /docs/guides/markdown-to-prosemirror.md  301

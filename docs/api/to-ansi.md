@@ -86,3 +86,9 @@ The built-in theme uses only inline ANSI constants — no external dependencies 
 | `hrChar` | `─` character |
 
 See the [ANSI Theme guide](/docs/guides/ansi-theme) for full details and examples.
+
+## Related
+
+- [Render Markdown in the terminal](/docs/guides/markdown-to-ansi-terminal): a complete Node.js CLI with paging and NO_COLOR support
+- [ANSI Theme guide](/docs/guides/ansi-theme): customise every style
+- [Comparison](/docs/comparison): how toAnsi() compares with marked-terminal

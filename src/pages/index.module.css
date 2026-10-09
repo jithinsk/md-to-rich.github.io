@@ -151,13 +151,29 @@
   margin-bottom: 0.5rem;
 }
 
+.featureLink,
+.featureLinks {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
 .featureDesc {
   font-size: 0.95rem;
   color: var(--ifm-color-secondary-darkest);
   margin: 0;
 }
 
-[data-theme='dark'] .featureDesc {
+[data-theme='dark'] .featureLink,
+.featureLinks {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.featureDesc {
   color: var(--ifm-color-secondary-lightest);
 }
 

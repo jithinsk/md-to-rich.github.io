@@ -109,4 +109,6 @@ See [Doc Tree Node Types](/docs/reference/doc-tree-nodes) for the complete type 
 
 ## Related
 
-- [ProseMirror / Slate adapter guide](/docs/guides/prosemirror-slate): map the tree into editor documents
+- [Markdown to ProseMirror](/docs/guides/markdown-to-prosemirror): a complete ProseMirror adapter
+- [Markdown to Slate](/docs/guides/markdown-to-slate): a complete Slate converter
+- [Markdown to Quill](/docs/guides/markdown-to-quill): build a Quill Delta

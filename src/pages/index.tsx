@@ -160,6 +160,9 @@ export default function Home(): React.JSX.Element {
                 class injection per element, GFM tables, task lists, and built-in URL
                 sanitisation.
               </p>
+              <Link className={styles.featureLink} to="/docs/api/to-html">
+                toHtml() reference →
+              </Link>
             </div>
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>🖥</div>
@@ -169,6 +172,9 @@ export default function Home(): React.JSX.Element {
                 without chalk, with word-wrap, box-drawing tables, and OSC 8 hyperlink
                 support.
               </p>
+              <Link className={styles.featureLink} to="/docs/guides/markdown-to-ansi-terminal">
+                Render Markdown in the terminal →
+              </Link>
             </div>
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>🌲</div>
@@ -177,6 +183,13 @@ export default function Home(): React.JSX.Element {
                 Parse Markdown into a typed JSON tree. Perfect for ProseMirror, Slate,
                 Quill, and other rich-text editors. Flat inline marks — no nested AST
                 wrangling.
+              </p>
+              <p className={styles.featureLinks}>
+                Guides: <Link to="/docs/guides/markdown-to-prosemirror">ProseMirror</Link>
+                {' · '}
+                <Link to="/docs/guides/markdown-to-slate">Slate</Link>
+                {' · '}
+                <Link to="/docs/guides/markdown-to-quill">Quill</Link>
               </p>
             </div>
           </div>

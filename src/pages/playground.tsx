@@ -306,8 +306,10 @@ function PlaygroundApp(): React.JSX.Element {
             </li>
             <li>
               <strong>Doc Tree</strong> uses <Link to="/docs/api/to-doc-tree">toDocTree()</Link>,
-              a typed JSON tree you can{' '}
-              <Link to="/docs/guides/prosemirror-slate">map into ProseMirror, Slate, or Quill</Link>.
+              a typed JSON tree you can map into{' '}
+              <Link to="/docs/guides/markdown-to-prosemirror">ProseMirror</Link>,{' '}
+              <Link to="/docs/guides/markdown-to-slate">Slate</Link>, or{' '}
+              <Link to="/docs/guides/markdown-to-quill">Quill</Link>.
             </li>
             <li>
               <strong>ANSI</strong> uses <Link to="/docs/api/to-ansi">toAnsi()</Link> at 80
