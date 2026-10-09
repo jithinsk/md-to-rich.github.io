@@ -1,6 +1,7 @@
 import { themes as prismThemes } from 'prism-react-renderer'
 import type { Config } from '@docusaurus/types'
 import type * as Preset from '@docusaurus/preset-classic'
+import cspHeaders from './plugins/csp-headers'
 
 const SITE = 'https://md-to-rich.jithins.dev'
 
@@ -105,6 +106,7 @@ const config: Config = {
   ],
 
   plugins: [
+    cspHeaders,
     [
       'docusaurus-plugin-llms',
       {
