@@ -37,3 +37,31 @@ table {
 table code {
   font-size: 0.85rem;
 }
+
+/* Footer: centre the link columns as a group so they line up with the
+   centred copyright, instead of each column filling half the width. */
+.footer__links {
+  justify-content: center;
+  gap: 4rem;
+}
+
+.footer__col {
+  flex: 0 0 auto;
+  width: auto;
+  max-width: none;
+}
+
+@media (max-width: 996px) {
+  .footer__links {
+    gap: 0;
+  }
+
+  .footer__col {
+    width: 100%;
+    text-align: center;
+  }
+
+  .footer__link-item {
+    display: inline-block;
+  }
+}
