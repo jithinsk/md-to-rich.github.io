@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Link from '@docusaurus/Link'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
 import Layout from '@theme/Layout'
@@ -80,6 +80,33 @@ const PlainText: Serializer<string> = {
 const result = serialize('# Hello\\n\\nThis is **bold** text.', PlainText)
 // → 'HelloThis is bold text.'`
 
+const INSTALL_COMMAND = 'npm install md-to-rich'
+
+function InstallCommand(): React.JSX.Element {
+  const [copied, setCopied] = useState(false)
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(INSTALL_COMMAND)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // clipboard unavailable
+    }
+  }
+
+  return (
+    <div className={styles.installStrip}>
+      <code className={styles.installCode}>
+        <span>$</span> {INSTALL_COMMAND}
+      </code>
+      <button className={styles.copyBtn} onClick={copy} aria-label="Copy install command">
+        {copied ? 'Copied!' : 'Copy'}
+      </button>
+    </div>
+  )
+}
+
 export default function Home(): React.JSX.Element {
   const { siteConfig } = useDocusaurusContext()
   return (
@@ -91,10 +118,16 @@ export default function Home(): React.JSX.Element {
       <header className={styles.hero}>
         <div className="container">
           <h1 className={styles.heroTitle}>{siteConfig.title}</h1>
-          <p className={styles.heroTagline}>{siteConfig.tagline}</p>
+          <p className={styles.heroTagline}>
+            A TypeScript library that converts Markdown to HTML, ANSI terminal output, and a
+            typed JSON tree for rich-text editors like ProseMirror, Slate, and Quill.
+          </p>
           <div className={styles.heroButtons}>
             <Link className={styles.btnPrimary} to="/docs/getting-started">
               Get Started
+            </Link>
+            <Link className={styles.btnOutline} to="/playground">
+              Try the Playground
             </Link>
             <Link
               className={styles.btnOutline}
@@ -113,11 +146,7 @@ export default function Home(): React.JSX.Element {
       </header>
 
       {/* Install strip */}
-      <div className={styles.installStrip}>
-        <code className={styles.installCode}>
-          <span>$</span> npm install md-to-rich
-        </code>
-      </div>
+      <InstallCommand />
 
       <main>
         {/* Feature cards */}

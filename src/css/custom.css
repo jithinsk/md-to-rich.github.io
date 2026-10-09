@@ -65,3 +65,16 @@ table code {
     display: inline-block;
   }
 }
+
+/* Comfortable tap targets for the navbar controls on touch screens */
+@media (pointer: coarse) {
+  .navbar__toggle,
+  .navbar-sidebar__close,
+  button[class*='toggleButton'] {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
