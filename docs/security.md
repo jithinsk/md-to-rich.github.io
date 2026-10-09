@@ -71,6 +71,10 @@ Click me: <a href="javascript:alert(document.cookie)">link</a>
 
 By default (`allowRawHtml: false`), raw HTML nodes in Markdown are stripped from the output entirely.
 
+## Reporting a Vulnerability
+
+Report security issues privately through GitHub's [Report a vulnerability](https://github.com/jithinsk/markdown-to-richtext/security/advisories/new) form rather than a public issue. Include the md-to-rich version, the function you called, and the Markdown input that triggers the problem. See the [security policy](https://github.com/jithinsk/markdown-to-richtext/blob/main/SECURITY.md) for supported versions.
+
 ## Related
 
 - [toHtml() API](/docs/api/to-html): the allowRawHtml option and its risks

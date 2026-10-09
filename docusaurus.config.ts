@@ -182,10 +182,11 @@ const config: Config = {
             { label: 'npm', href: 'https://www.npmjs.com/package/md-to-rich' },
             { label: 'Changelog', to: '/docs/changelog' },
             { label: 'Security', to: '/docs/security' },
+            { label: 'Report a vulnerability', href: 'https://github.com/jithinsk/markdown-to-richtext/security/advisories/new' },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Jithin Sebastian. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} <a href="https://github.com/jithinsk">Jithin Sebastian</a>. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

@@ -78,3 +78,9 @@ table code {
     justify-content: center;
   }
 }
+
+/* The primary link colour is too low-contrast on the dark footer. */
+.footer__copyright a {
+  color: inherit;
+  text-decoration: underline;
+}
