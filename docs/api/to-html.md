@@ -80,6 +80,9 @@ When `gfm: true` (the default), the following GitHub Flavored Markdown extension
 | Task lists | `- [x] done` | `<input type="checkbox" disabled checked>` |
 | Strikethrough | `~~text~~` | `<del>text</del>` |
 | Autolinks | `https://example.com` | `<a href="...">` |
+| Footnotes (2.1.0+) | `text[^1]` … `[^1]: note` | `<sup><a href="#fn-1">1</a></sup>` and a closing `<section class="footnotes">` with back-links |
+
+Reference-style links and images (`[text][ref]` with `[ref]: url`) resolve to normal links and images. Ordered lists keep their start number (`<ol start="3">`). Both need 2.1.0 or later.
 
 ## URL Sanitisation
 

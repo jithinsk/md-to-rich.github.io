@@ -104,6 +104,9 @@ function collectText(doc: DocDocument): string[] {
 - Nested `strong`/`emphasis`/`delete` marks are **flattened** into `DocText` boolean flags (`bold`, `italic`, `strikethrough`). A node that is both bold and italic will have `bold: true, italic: true`.
 - `DocListItem.checked` is `true` / `false` for GFM task list items and `null` for regular list items.
 - `DocTableRow.isHeader` is `true` for the first row (the header row) in a GFM table.
+- `DocList.start` is the first item number of an ordered list, `null` for unordered lists (2.1.0+).
+- GFM footnotes produce `footnoteReference` inline nodes, with the `footnoteDefinition` blocks moved to the end of the document (2.1.0+).
+- Reference-style links and images resolve to ordinary `link` and `image` nodes (2.1.0+).
 
 See [Doc Tree Node Types](/docs/reference/doc-tree-nodes) for the complete type reference.
 

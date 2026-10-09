@@ -95,7 +95,7 @@ See the [ANSI Theme guide](/docs/guides/ansi-theme) for full details and example
 
 ### How does toAnsi() show links and images?
 
-By default a link prints as its label in the `link` style followed by the URL in parentheses, such as `Docs (https://example.com)`. With `hyperlinks: true` it becomes a clickable OSC 8 link that shows only the label. Images can't be drawn in a terminal, so `toAnsi()` prints `[image: alt text]` in their place, using the image's alt text.
+By default a link prints as its label in the `link` style followed by the URL in parentheses, such as `Docs (https://example.com)`. With `hyperlinks: true` it becomes a clickable OSC 8 link that shows only the label. Images can't be drawn in a terminal, so `toAnsi()` prints `[image: alt text]` in their place, falling back to the URL when the alt text is empty. Links with unsafe URLs such as `javascript:` show only their label. Footnote references print as `[1]`, with the notes listed at the end (2.1.0+).
 
 ### Does toAnsi() syntax-highlight code blocks?
 

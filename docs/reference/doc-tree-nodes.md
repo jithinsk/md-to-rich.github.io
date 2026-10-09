@@ -18,19 +18,21 @@ DocDocument
     ├── DocParagraph         { children: DocInlineNode[] }
     ├── DocBlockquote        { children: DocBlockNode[] }
     ├── DocCodeBlock         { lang: string|null, value: string }
-    ├── DocList              { ordered: boolean, children: DocListItem[] }
+    ├── DocList              { ordered: boolean, start: number|null, children: DocListItem[] }
     │   └── DocListItem      { checked: boolean|null, children: (DocBlockNode|DocInlineNode)[] }
     ├── DocTable             { align: [...], children: DocTableRow[] }
     │   └── DocTableRow      { isHeader: boolean, children: DocTableCell[] }
     │       └── DocTableCell { children: DocInlineNode[] }
-    └── DocHorizontalRule    { type: 'thematicBreak' }
+    ├── DocHorizontalRule    { type: 'thematicBreak' }
+    └── DocFootnoteDefinition { identifier: string, label: string|null, children: DocBlockNode[] }
 
 DocInlineNode
     ├── DocText              { value: string, bold: boolean, italic: boolean, strikethrough: boolean }
     ├── DocInlineCode        { value: string }
     ├── DocLink              { url: string, title: string|null, children: DocInlineNode[] }
     ├── DocImage             { url: string, alt: string|null, title: string|null }
-    └── DocBreak
+    ├── DocBreak
+    └── DocFootnoteReference { identifier: string, label: string|null }
 ```
 
 ---
@@ -106,9 +108,12 @@ interface DocCodeBlock {
 interface DocList {
   type: 'list'
   ordered: boolean
+  start: number | null
   children: DocListItem[]
 }
 ```
+
+`start` is the number of the first item of an ordered list (`3` for a list that begins `3.`) and `null` for unordered lists. Added in 2.1.0.
 
 ---
 
@@ -172,6 +177,21 @@ interface DocHorizontalRule {
   type: 'thematicBreak'
 }
 ```
+
+---
+
+### `DocFootnoteDefinition`
+
+```typescript
+interface DocFootnoteDefinition {
+  type: 'footnoteDefinition'
+  identifier: string
+  label: string | null
+  children: DocBlockNode[]
+}
+```
+
+The body of a GFM footnote (`[^1]: …`). Definitions are moved to the end of the document: referenced ones first, in the order they are first referenced, then any that are never referenced. Footnote numbers aren't stored in the tree; number definitions by their position if you need them. Added in 2.1.0.
 
 ---
 
@@ -246,6 +266,20 @@ Represents a hard line break (two trailing spaces or `\` before newline).
 
 ---
 
+### `DocFootnoteReference`
+
+```typescript
+interface DocFootnoteReference {
+  type: 'footnoteReference'
+  identifier: string
+  label: string | null
+}
+```
+
+A GFM footnote marker such as `[^1]`. `identifier` is the normalised label used to match the definition; `label` is the label as written. Added in 2.1.0.
+
+---
+
 ## Union Type Aliases
 
 ```typescript
@@ -255,6 +289,7 @@ type DocInlineNode =
   | DocLink
   | DocImage
   | DocBreak
+  | DocFootnoteReference
 
 type DocBlockNode =
   | DocHeading
@@ -264,6 +299,7 @@ type DocBlockNode =
   | DocList
   | DocTable
   | DocHorizontalRule
+  | DocFootnoteDefinition
 
 type DocTreeNode =
   | DocDocument

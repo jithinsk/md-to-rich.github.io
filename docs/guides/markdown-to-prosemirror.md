@@ -2,7 +2,7 @@
 id: markdown-to-prosemirror
 title: Convert Markdown to ProseMirror in TypeScript
 sidebar_label: ProseMirror
-description: "Convert Markdown to a ProseMirror document with md-to-rich: a complete TypeScript adapter for headings, lists, task items, tables, marks, links and images."
+description: "Convert Markdown to a ProseMirror document with md-to-rich: a complete TypeScript adapter for headings, lists, task items, tables, footnotes, marks, links and images."
 ---
 
 # Convert Markdown to ProseMirror
@@ -19,13 +19,18 @@ npm install md-to-rich prosemirror-model prosemirror-state prosemirror-schema-ba
 
 ## 1. Extend the schema
 
-`prosemirror-schema-basic` covers paragraphs, headings, blockquotes, code blocks, rules, images, hard breaks and the `strong`, `em`, `code` and `link` marks. Markdown needs five things it lacks:
+`prosemirror-schema-basic` covers paragraphs, headings, blockquotes, code blocks, rules, images, hard breaks and the `strong`, `em`, `code` and `link` marks. Markdown needs six things it lacks:
 
 - **Lists**: added with `addListNodes()` from `prosemirror-schema-list` (`ordered_list`, `bullet_list`, `list_item`).
 - **Task items**: `list_item` gets a `checked` attribute (`null`, `true` or `false`). Keeping tasks as an attribute, rather than adding a separate task-list node, means the list commands from `prosemirror-schema-list` keep working on them.
 - **Code block language**: the basic `code_block` has no attributes, so it gets a `language` attribute.
 - **Strikethrough**: a new `strikethrough` mark.
 - **Tables**: `tableNodes()` from `prosemirror-tables`, with an `align` cell attribute for GFM column alignment.
+- **Footnotes**: a `footnote_ref` inline atom for each `[^1]` marker and a `footnote` node for each definition, holding block content. `doc` becomes `block+ footnote*`, so footnotes always sit at the end of the document, where the Doc Tree puts them.
+
+:::note
+Footnotes and ordered list start numbers need md-to-rich 2.1.0 or later. On older versions the Doc Tree has no footnote nodes and no `DocList.start`.
+:::
 
 ```typescript title="schema.ts"
 import { Schema } from 'prosemirror-model'
@@ -75,8 +80,45 @@ const strikethrough: MarkSpec = {
   toDOM: () => ['s', 0],
 }
 
+// A footnote marker in the text: an inline atom that stores the identifier
+// and shows the label as written ([^note] shows "note").
+const footnoteRef: NodeSpec = {
+  inline: true,
+  group: 'inline',
+  atom: true,
+  attrs: { id: {}, label: { default: null } },
+  parseDOM: [
+    {
+      tag: 'sup[data-footnote-ref]',
+      getAttrs: (dom) => ({ id: (dom as HTMLElement).getAttribute('data-footnote-ref'), label: dom.textContent }),
+    },
+  ],
+  toDOM: (node) => ['sup', { 'data-footnote-ref': node.attrs.id }, String(node.attrs.label ?? node.attrs.id)],
+}
+
+// A footnote body. It is not in the `block` group, so footnotes can only
+// sit at the end of the document (see `doc` below), never inside other nodes.
+const footnote: NodeSpec = {
+  content: 'block+',
+  defining: true,
+  isolating: true,
+  attrs: { id: {}, label: { default: null } },
+  parseDOM: [
+    {
+      tag: 'div[data-footnote]',
+      getAttrs: (dom) => ({
+        id: (dom as HTMLElement).getAttribute('data-footnote'),
+        label: (dom as HTMLElement).getAttribute('data-label'),
+      }),
+    },
+  ],
+  toDOM: (node) => ['div', { 'data-footnote': node.attrs.id, 'data-label': node.attrs.label }, 0],
+}
+
 const nodes = addListNodes(
-  basicSchema.spec.nodes.update('code_block', codeBlock),
+  basicSchema.spec.nodes
+    .update('doc', { content: 'block+ footnote*' })
+    .update('code_block', codeBlock),
   'paragraph block*',
   'block',
 )
@@ -96,11 +138,12 @@ const nodes = addListNodes(
       },
     }),
   )
+  .append({ footnote_ref: footnoteRef, footnote })
 
 type NodeName =
   | 'doc' | 'paragraph' | 'blockquote' | 'horizontal_rule' | 'heading' | 'code_block'
   | 'text' | 'image' | 'hard_break' | 'ordered_list' | 'bullet_list' | 'list_item'
-  | 'table' | 'table_row' | 'table_cell' | 'table_header'
+  | 'table' | 'table_row' | 'table_cell' | 'table_header' | 'footnote_ref' | 'footnote'
 type MarkName = 'link' | 'em' | 'strong' | 'code' | 'strikethrough'
 
 // Explicit names give typed access to schema.nodes.* and schema.marks.*
@@ -160,6 +203,8 @@ function inlineToNodes(node: DocInlineNode, inherited: readonly Mark[] = []): PM
       return [nodes.image.create({ src: safeUrl(node.url), alt: node.alt, title: node.title }, null, Mark.setFrom(inherited))]
     case 'break':
       return [nodes.hard_break.create()]
+    case 'footnoteReference':
+      return [nodes.footnote_ref.create({ id: node.identifier, label: node.label }, null, Mark.setFrom(inherited))]
     default:
       return [] // unknown inline node from a newer md-to-rich: skip it
   }
@@ -169,7 +214,7 @@ function inlines(children: DocInlineNode[]): PMNode[] {
   return children.flatMap((child) => inlineToNodes(child))
 }
 
-const INLINE_TYPES = new Set(['text', 'inlineCode', 'link', 'image', 'break'])
+const INLINE_TYPES = new Set(['text', 'inlineCode', 'link', 'image', 'break', 'footnoteReference'])
 
 function isInline(node: DocBlockNode | DocInlineNode): node is DocInlineNode {
   return INLINE_TYPES.has(node.type)
@@ -215,12 +260,14 @@ function blockToNodes(node: DocBlockNode): PMNode[] {
       return [make(nodes.code_block, { language: node.lang }, node.value ? [schema.text(node.value)] : [])]
     case 'list': {
       const items = node.children.map(listItemToNode)
-      return [node.ordered ? make(nodes.ordered_list, { order: 1 }, items) : make(nodes.bullet_list, null, items)]
+      return [node.ordered ? make(nodes.ordered_list, { order: node.start ?? 1 }, items) : make(nodes.bullet_list, null, items)]
     }
     case 'table':
       return [make(nodes.table, null, node.children.map((row) => rowToNode(row, node.align)))]
     case 'thematicBreak':
       return [nodes.horizontal_rule.create()]
+    case 'footnoteDefinition':
+      return [make(nodes.footnote, { id: node.identifier, label: node.label }, node.children.flatMap(blockToNodes))]
     default:
       return [] // unknown block node from a newer md-to-rich: skip it
   }
@@ -268,6 +315,12 @@ The two list items carry `checked: true` and `checked: false` in their attribute
 
 `prosemirror-tables` distinguishes `table_header` from `table_cell`. Rows with `isHeader: true` (the first row of every GFM table) use `table_header`; all other rows use `table_cell`. The table's `align` array is copied onto each cell's `align` attribute by column index.
 
+### Footnotes stay out of the `block` group
+
+A `footnote` could be an ordinary block, but then it would be allowed inside blockquotes, list items and other footnotes. Leaving it out of the `block` group and setting `doc` to `block+ footnote*` matches the Doc Tree, which moves every definition to the end of the document: referenced ones in order of first reference, then unreferenced ones. A `footnote_ref` is an atom, so the cursor treats it as a single character and it can't be edited by typing. It stores the definition's `identifier` as `id` and renders the label as written (`[^note]` shows `note`).
+
+The Doc Tree carries no footnote numbers. To show numbers, number the definitions in document order: since they arrive in order of first reference, the first `footnote` is note 1, and a `footnote_ref` takes the number of the footnote with the same `id`. Definitions that are never referenced come last, so you can also drop them.
+
 ### `checked` is a list item attribute
 
 `DocListItem.checked` is `null` for normal items and `true`/`false` for GFM task items. The adapter copies it straight onto the `list_item`'s `checked` attribute, and `toDOM` renders task items as `<li data-task data-checked="true">`. Use a node view or CSS to draw the checkbox.
@@ -280,7 +333,7 @@ Each `switch` ends in a `default` branch that returns `[]`, so a node type added
 
 ### Why does my ordered list always start at 1?
 
-`DocList` has `ordered` but no start number, so `3. Third` arrives as an ordered list without the `3`. The adapter sets `order: 1`. If the start number matters, set `order` yourself after conversion; the Doc Tree doesn't carry it.
+You are on md-to-rich 2.0.x or earlier. From 2.1.0, `DocList.start` holds the first item number (`3` for `3. Third`), and the adapter copies it onto `ordered_list`'s `order` attribute. Older versions don't carry the number, so `node.start` is `undefined` and the adapter falls back to `order: 1`.
 
 ### Are link and image URLs safe to render?
 
@@ -288,7 +341,7 @@ Yes, from md-to-rich 2.0.1: `toDocTree()` replaces `javascript:`, `data:` and ot
 
 ### Why do some list items start with an empty paragraph?
 
-ProseMirror list items must start with a paragraph (`paragraph block*`), which is what list commands like `splitListItem` expect. A Markdown item that starts with a code block, or that is empty, gets an empty paragraph in front from `createAndFill()`.
+ProseMirror list items must start with a paragraph (`paragraph block*`), which is what list commands like `splitListItem` expect. A Markdown item that starts with a code block, or that is empty, gets an empty paragraph in front from `createAndFill()`. For the same reason, Markdown that holds only footnote definitions produces an empty paragraph before the footnotes, since `doc` needs at least one block.
 
 ## Related
 

@@ -42,7 +42,8 @@ export type ImageElement = {
   title: string | null
   children: [{ text: '' }]
 }
-export type InlineElement = LinkElement | ImageElement
+export type FootnoteRefElement = { type: 'footnote-ref'; identifier: string; children: [{ text: '' }] }
+export type InlineElement = LinkElement | ImageElement | FootnoteRefElement
 export type InlineChild = CustomText | InlineElement
 
 export type ParagraphElement = { type: 'paragraph'; children: InlineChild[] }
@@ -55,7 +56,7 @@ export type BlockQuoteElement = { type: 'block-quote'; children: BlockElement[] 
 export type CodeBlockElement = { type: 'code-block'; lang: string | null; children: CustomText[] }
 export type ListItemElement = { type: 'list-item'; checked?: boolean; children: BlockElement[] }
 export type BulletedListElement = { type: 'bulleted-list'; children: ListItemElement[] }
-export type NumberedListElement = { type: 'numbered-list'; children: ListItemElement[] }
+export type NumberedListElement = { type: 'numbered-list'; start?: number; children: ListItemElement[] }
 export type TableCellElement = {
   type: 'table-cell'
   header: boolean
@@ -65,6 +66,7 @@ export type TableCellElement = {
 export type TableRowElement = { type: 'table-row'; children: TableCellElement[] }
 export type TableElement = { type: 'table'; children: TableRowElement[] }
 export type ThematicBreakElement = { type: 'thematic-break'; children: [{ text: '' }] }
+export type FootnoteElement = { type: 'footnote'; identifier: string; children: BlockElement[] }
 
 export type BlockElement =
   | ParagraphElement
@@ -78,6 +80,7 @@ export type BlockElement =
   | TableRowElement
   | TableCellElement
   | ThematicBreakElement
+  | FootnoteElement
 
 export type CustomElement = BlockElement | InlineElement
 
@@ -92,7 +95,7 @@ declare module 'slate' {
 
 Two Slate rules shape these types:
 
-- **Void elements still have children.** `image` and `thematic-break` carry `children: [{ text: '' }]`; Slate requires one empty text leaf even though it never renders it.
+- **Void elements still have children.** `image`, `footnote-ref` and `thematic-break` carry `children: [{ text: '' }]`; Slate requires one empty text leaf even though it never renders it.
 - **Leaves carry marks as optional `true` flags.** A mark that is off is omitted rather than set to `false`, because Slate compares leaves by their keys when merging them.
 
 ## 2. The converter
@@ -102,7 +105,13 @@ import { toDocTree } from 'md-to-rich'
 import type { DocBlockNode, DocDocument, DocInlineNode, DocListItem } from 'md-to-rich'
 import { Text } from 'slate'
 import type { Descendant, Editor } from 'slate'
-import type { BlockElement, CustomText, InlineChild, ListItemElement } from './slate-types'
+import type {
+  BlockElement,
+  CustomText,
+  InlineChild,
+  ListItemElement,
+  NumberedListElement,
+} from './slate-types'
 
 export function markdownToSlate(md: string): Descendant[] {
   return docToSlate(toDocTree(md))
@@ -116,9 +125,15 @@ export function docToSlate(doc: DocDocument): Descendant[] {
 export function withMarkdownElements<T extends Editor>(editor: T): T {
   const { isInline, isVoid } = editor
   editor.isInline = (element) =>
-    element.type === 'link' || element.type === 'image' || isInline(element)
+    element.type === 'link' ||
+    element.type === 'image' ||
+    element.type === 'footnote-ref' ||
+    isInline(element)
   editor.isVoid = (element) =>
-    element.type === 'image' || element.type === 'thematic-break' || isVoid(element)
+    element.type === 'image' ||
+    element.type === 'thematic-break' ||
+    element.type === 'footnote-ref' ||
+    isVoid(element)
   return editor
 }
 
@@ -136,11 +151,13 @@ function blockToSlate(node: DocBlockNode): BlockElement {
       return { type: 'block-quote', children: toBlocks(node.children) }
     case 'code':
       return { type: 'code-block', lang: node.lang, children: [{ text: node.value }] }
-    case 'list':
-      return {
-        type: node.ordered ? 'numbered-list' : 'bulleted-list',
-        children: node.children.map(listItemToSlate),
-      }
+    case 'list': {
+      const children = node.children.map(listItemToSlate)
+      if (!node.ordered) return { type: 'bulleted-list', children }
+      const list: NumberedListElement = { type: 'numbered-list', children }
+      if (node.start !== null && node.start !== 1) list.start = node.start
+      return list
+    }
     case 'table':
       return {
         type: 'table',
@@ -156,6 +173,8 @@ function blockToSlate(node: DocBlockNode): BlockElement {
       }
     case 'thematicBreak':
       return { type: 'thematic-break', children: [{ text: '' }] }
+    case 'footnoteDefinition':
+      return { type: 'footnote', identifier: node.identifier, children: toBlocks(node.children) }
   }
 }
 
@@ -192,7 +211,8 @@ function isInlineNode(node: DocBlockNode | DocInlineNode): node is DocInlineNode
     node.type === 'inlineCode' ||
     node.type === 'link' ||
     node.type === 'image' ||
-    node.type === 'break'
+    node.type === 'break' ||
+    node.type === 'footnoteReference'
   )
 }
 
@@ -228,6 +248,8 @@ function inlineToSlate(node: DocInlineNode): InlineChild {
         title: node.title,
         children: [{ text: '' }],
       }
+    case 'footnoteReference':
+      return { type: 'footnote-ref', identifier: node.identifier, children: [{ text: '' }] }
   }
 }
 
@@ -278,15 +300,23 @@ function toInlines(nodes: DocInlineNode[]): InlineChild[] {
 | `paragraph` | `{ type: 'paragraph' }` |
 | `blockquote` | `{ type: 'block-quote' }` with block children |
 | `code` | `{ type: 'code-block', lang }` with one text leaf holding the source |
-| `list` | `bulleted-list` or `numbered-list` |
+| `list` | `bulleted-list` or `numbered-list`, plus `start` when an ordered list doesn't start at 1 |
 | `listItem` | `{ type: 'list-item' }`, plus `checked` for task items |
 | `table` / `tableRow` / `tableCell` | `table` / `table-row` / `table-cell` with `header` and `align` |
 | `thematicBreak` | `{ type: 'thematic-break' }` (void block) |
+| `footnoteDefinition` | `{ type: 'footnote', identifier }` with block children |
 | `text` | leaf with `bold`, `italic`, `strikethrough` |
 | `inlineCode` | leaf with `code: true` |
 | `link` | `{ type: 'link', url, title }` (inline, URL checked by `safeUrl()`) |
 | `image` | `{ type: 'image', url, alt, title }` (inline void, URL checked by `safeUrl()`) |
 | `break` | `'\n'` inside the surrounding text leaf |
+| `footnoteReference` | `{ type: 'footnote-ref', identifier }` (inline void) |
+
+### Footnotes
+
+Footnotes, `DocList.start` and reference-style links need md-to-rich 2.1.0 or later. Earlier versions have no footnote nodes or `start` field, and drop reference-style links (`[text][ref]`) entirely; from 2.1.0 they arrive as ordinary `link` and `image` nodes, so the converter needs no extra code for them.
+
+A footnote reference such as `[^1]` becomes an inline void `footnote-ref` carrying the definition's `identifier`. The Doc Tree moves every definition to the end of the document, so the `footnote` blocks come after the last block of content: first the referenced ones in order of first reference, then any that are never referenced. Match each `footnote-ref` to its `footnote` by `identifier`, which md-to-rich normalises (`[^Note]` and `[^note]` share the identifier `note`). Because referenced definitions come first, numbering the `footnote` blocks in document order gives the usual 1, 2, 3; drop unreferenced ones if you don't want to show them. A definition can contain any block, including another `footnote-ref`.
 
 ## 3. Use it in an editor
 
@@ -313,7 +343,7 @@ export function MarkdownEditor({ markdown }: { markdown: string }) {
 
 `initialValue` is only read on mount. To load new Markdown later, remount the component (for example with a `key`) or replace `editor.children` and call `editor.onChange()`.
 
-`Editable` renders every element as a `div` by default; supply `renderElement` and `renderLeaf` to draw headings, lists, tables, links and images. Remember to render `children` inside void elements too, as Slate requires.
+`Editable` renders every element as a `div` by default; supply `renderElement` and `renderLeaf` to draw headings, lists, tables, links, images and footnotes. Remember to render `children` inside void elements too, as Slate requires.
 
 ## Design Notes
 
@@ -327,11 +357,11 @@ Slate repairs invalid documents when it normalises them, silently rewriting cont
 
 - **Adjacent leaves with identical marks are merged.** A hard break becomes `'\n'` and joins its neighbours, so `a  \nb` is a single leaf `'a\nb'`.
 - **Redundant empty leaves are dropped.** The Doc Tree can contain empty `text` nodes, for example between a link and an image.
-- **Inline elements sit between text leaves.** A link or image at the start or end of a block, or next to another inline, gets an empty `{ text: '' }` on each side. This applies inside links too, such as an image wrapped in a link.
+- **Inline elements sit between text leaves.** A link, image or footnote reference at the start or end of a block, or next to another inline, gets an empty `{ text: '' }` on each side. This applies inside links too, such as an image wrapped in a link.
 - **No element is empty.** An empty heading gets `[{ text: '' }]`; an empty blockquote or list item gets an empty paragraph.
 - **Containers never mix blocks and inlines.** `DocListItem.children` may hold both, so runs of inline nodes are wrapped in a `paragraph`. md-to-rich wraps list item text in paragraphs already, so `list-item` children are always blocks.
 
-These rules were checked by loading the output for a sample covering every node type into `createEditor()`, running `Editor.normalize(editor, { force: true })`, and confirming the value did not change.
+These rules were checked by loading the output for a sample covering every node type, including footnotes, into `createEditor()`, running `Editor.normalize(editor, { force: true })`, and confirming the value did not change.
 
 ### Check link and image URLs
 
@@ -341,11 +371,11 @@ Since md-to-rich 2.0.1, `toDocTree()` replaces dangerous link and image URLs wit
 
 ### How is this different from remark-slate or remark-slate-transformer?
 
-Those packages are remark plugins: you assemble a unified pipeline and work with mdast-shaped output. Here the converter is about 170 lines of your own TypeScript over a small, fully typed tree, so you choose the element names and fields to match your editor schema and change them without forking a dependency.
+Those packages are remark plugins: you assemble a unified pipeline and work with mdast-shaped output. Here the converter is about 190 lines of your own TypeScript over a small, fully typed tree, so you choose the element names and fields to match your editor schema and change them without forking a dependency.
 
 ### Can I rename the element types?
 
-Yes. The `type` strings and fields are defined only in `slate-types.ts` and the converter. Rename them to match your existing `renderElement`; keep `withMarkdownElements` in sync so Slate still treats links and images as inline and void.
+Yes. The `type` strings and fields are defined only in `slate-types.ts` and the converter. Rename them to match your existing `renderElement`; keep `withMarkdownElements` in sync so Slate still treats links, images and footnote references as inline, and images, footnote references and thematic breaks as void.
 
 ### Why is an image an inline element and not a block?
 

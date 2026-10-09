@@ -2,7 +2,7 @@
 id: markdown-to-quill
 title: Convert Markdown to Quill Delta in TypeScript
 sidebar_label: Quill
-description: "Convert Markdown to a Quill Delta with a complete TypeScript converter: headings, nested lists, task items, code blocks, images, dividers and Quill 2 tables."
+description: "Convert Markdown to a Quill Delta with a complete TypeScript converter: headings, nested lists, task items, code blocks, images, dividers, footnotes and Quill 2 tables."
 ---
 
 # Convert Markdown to Quill Delta
@@ -57,6 +57,7 @@ interface Context {
   depth: number
   options: QuillDeltaOptions
   nextRowId: () => string
+  footnote: (identifier: string) => number
 }
 
 const MAX_INDENT = 8 // Quill's indent whitelist is 1–8
@@ -64,7 +65,14 @@ const MAX_INDENT = 8 // Quill's indent whitelist is 1–8
 export function docToDelta(doc: DocDocument, options: QuillDeltaOptions = {}): Delta {
   const delta = new Delta()
   let rows = 0
-  const ctx: Context = { quote: false, depth: 0, options, nextRowId: () => `row-${++rows}` }
+  // Footnotes are numbered in order of first reference. Definitions come last in the
+  // Doc Tree, so an unreferenced one gets the next free number when it is reached.
+  const footnotes = new Map<string, number>()
+  const footnote = (id: string) => {
+    if (!footnotes.has(id)) footnotes.set(id, footnotes.size + 1)
+    return footnotes.get(id)!
+  }
+  const ctx: Context = { quote: false, depth: 0, options, nextRowId: () => `row-${++rows}`, footnote }
   for (const block of doc.children) writeBlock(delta, block, ctx)
   // A Delta document must end with a newline (empty input, or a trailing divider).
   const last = delta.ops[delta.ops.length - 1]
@@ -79,10 +87,10 @@ export function markdownToDelta(md: string, options: QuillDeltaOptions = {}): De
 function writeBlock(delta: Delta, node: DocBlockNode, ctx: Context): void {
   switch (node.type) {
     case 'heading':
-      writeLine(delta, node.children, { header: node.depth })
+      writeLine(delta, node.children, { header: node.depth }, ctx)
       break
     case 'paragraph':
-      writeLine(delta, node.children, ctx.quote ? { blockquote: true } : {})
+      writeLine(delta, node.children, ctx.quote ? { blockquote: true } : {}, ctx)
       break
     case 'blockquote':
       for (const child of node.children) writeBlock(delta, child, { ...ctx, quote: true })
@@ -104,13 +112,13 @@ function writeBlock(delta: Delta, node: DocBlockNode, ctx: Context): void {
           // Quill 2 table module: one line per cell, all cells of a row share a row id.
           const table = ctx.nextRowId()
           for (const cell of row.children) {
-            writeInlines(delta, cell.children, null, row.isHeader ? { bold: true } : {})
+            writeInlines(delta, cell.children, null, row.isHeader ? { bold: true } : {}, ctx)
             delta.insert('\n', { table })
           }
         } else {
           row.children.forEach((cell, i) => {
             if (i > 0) delta.insert('\t')
-            writeInlines(delta, cell.children, null, row.isHeader ? { bold: true } : {})
+            writeInlines(delta, cell.children, null, row.isHeader ? { bold: true } : {}, ctx)
           })
           delta.insert('\n')
         }
@@ -120,9 +128,23 @@ function writeBlock(delta: Delta, node: DocBlockNode, ctx: Context): void {
       // Block embed: Quill drops it unless the DividerBlot below is registered.
       delta.insert({ divider: true })
       break
+    case 'footnoteDefinition': {
+      // Quill has no footnote format: the note becomes ordinary lines whose first
+      // line starts with the same superscript number as its reference.
+      const marker: DocInlineNode[] = [
+        { type: 'footnoteReference', identifier: node.identifier, label: node.label },
+        { type: 'text', value: ' ', bold: false, italic: false, strikethrough: false },
+      ]
+      const [first, ...rest] = node.children
+      if (first?.type === 'paragraph') writeLine(delta, [...marker, ...first.children], {}, ctx)
+      else writeLine(delta, marker.slice(0, 1), {}, ctx)
+      for (const child of first?.type === 'paragraph' ? rest : node.children) writeBlock(delta, child, ctx)
+      break
+    }
   }
 }
 
+// Quill numbers ordered lists from 1 with CSS counters; `list.start` cannot be kept.
 function writeList(delta: Delta, list: DocList, ctx: Context): void {
   for (const item of list.children) writeListItem(delta, item, list.ordered, ctx)
 }
@@ -137,7 +159,7 @@ function writeListItem(delta: Delta, item: DocListItem, ordered: boolean, ctx: C
 
   const flush = () => {
     if (inline.length === 0) return
-    writeLine(delta, inline, first ? bullet : continuation, continuation)
+    writeLine(delta, inline, first ? bullet : continuation, ctx, continuation)
     first = false
     inline = []
   }
@@ -145,11 +167,11 @@ function writeListItem(delta: Delta, item: DocListItem, ordered: boolean, ctx: C
   for (const child of item.children) {
     if (child.type === 'paragraph') {
       flush()
-      writeLine(delta, child.children, first ? bullet : continuation, continuation)
+      writeLine(delta, child.children, first ? bullet : continuation, ctx, continuation)
       first = false
     } else if (child.type === 'list') {
       flush()
-      if (first) writeLine(delta, [], bullet) // empty item that only holds a sub-list
+      if (first) writeLine(delta, [], bullet, ctx) // empty item that only holds a sub-list
       first = false
       writeList(delta, child, { ...ctx, depth: ctx.depth + 1 })
     } else if (isInline(child)) {
@@ -161,11 +183,11 @@ function writeListItem(delta: Delta, item: DocListItem, ordered: boolean, ctx: C
     }
   }
   flush()
-  if (first) writeLine(delta, [], bullet)
+  if (first) writeLine(delta, [], bullet, ctx)
 }
 
 function isInline(node: DocBlockNode | DocInlineNode): node is DocInlineNode {
-  return ['text', 'inlineCode', 'link', 'image', 'break'].includes(node.type)
+  return ['text', 'inlineCode', 'link', 'image', 'break', 'footnoteReference'].includes(node.type)
 }
 
 /** Format for the current line, and for lines started by a hard break. */
@@ -175,14 +197,14 @@ interface Line {
 }
 
 /** Inline content followed by the `\n` that carries the line (block) format. */
-function writeLine(delta: Delta, inlines: DocInlineNode[], format: Attributes, next = format): void {
+function writeLine(delta: Delta, inlines: DocInlineNode[], format: Attributes, ctx: Context, next = format): void {
   const line: Line = { format, next }
-  writeInlines(delta, inlines, line, {})
+  writeInlines(delta, inlines, line, {}, ctx)
   delta.insert('\n', line.format)
 }
 
 /** `line: null` means the content cannot be split into lines (table cells). */
-function writeInlines(delta: Delta, inlines: DocInlineNode[], line: Line | null, marks: Attributes): void {
+function writeInlines(delta: Delta, inlines: DocInlineNode[], line: Line | null, marks: Attributes, ctx: Context): void {
   for (const node of inlines) {
     switch (node.type) {
       case 'text':
@@ -197,7 +219,7 @@ function writeInlines(delta: Delta, inlines: DocInlineNode[], line: Line | null,
         insertText(delta, node.value, { ...marks, code: true })
         break
       case 'link':
-        writeInlines(delta, node.children, line, { ...marks, link: safeUrl(node.url) })
+        writeInlines(delta, node.children, line, { ...marks, link: safeUrl(node.url) }, ctx)
         break
       case 'image':
         delta.insert(
@@ -213,6 +235,10 @@ function writeInlines(delta: Delta, inlines: DocInlineNode[], line: Line | null,
         } else {
           delta.insert(' ', marks)
         }
+        break
+      case 'footnoteReference':
+        // No footnote format in Quill: show the number as superscript text.
+        delta.insert(String(ctx.footnote(node.identifier)), { ...marks, script: 'super' })
         break
     }
   }
@@ -241,16 +267,18 @@ function insertText(delta: Delta, value: string, attributes: Attributes): void {
 | `paragraph` | text, then `\n` (with `{ blockquote: true }` inside a quote) |
 | `blockquote` | its children, with paragraphs marked `blockquote` |
 | `code` | one `\n` per source line, each with `{ 'code-block': lang ?? 'plain' }` |
-| `list` / `listItem` | `\n` with `{ list: 'bullet' \| 'ordered' \| 'checked' \| 'unchecked' }` |
+| `list` / `listItem` | `\n` with `{ list: 'bullet' \| 'ordered' \| 'checked' \| 'unchecked' }` (`start` is dropped) |
 | nested `list` | the same, plus `{ indent: n }` (capped at 8) |
 | extra paragraph in an item | `\n` with `{ indent: depth + 1 }` |
 | `table` | Quill 2 cells (`{ table: rowId }`) or tab-separated lines |
 | `thematicBreak` | `{ insert: { divider: true } }` block embed |
+| `footnoteDefinition` | plain lines at the end, the first starting with its superscript number |
 | `text` | insert with `bold`, `italic`, `strike` |
 | `inlineCode` | insert with `{ code: true }` |
 | `link` | its children, each with `{ link: safeUrl(url) }` |
 | `image` | `{ insert: { image: safeUrl(url) } }`, with `alt` (and `link` if wrapped) |
 | `break` | `\n` carrying the current line's format |
+| `footnoteReference` | its number, inserted with `{ script: 'super' }` |
 
 ## 2. Register a divider
 
@@ -278,11 +306,13 @@ import { markdownToDelta } from './markdown-to-quill'
 const markdown = `# Release notes
 
 - [x] Tables
-- [ ] Footnotes
+- [x] Footnotes[^1]
 
 | Package | Version |
 | ------- | ------- |
-| quill   | 2.0.3   |`
+| quill   | 2.0.3   |
+
+[^1]: Needs md-to-rich 2.1.0 or later.`
 
 const quill = new Quill('#editor', {
   theme: 'snow',
@@ -305,6 +335,19 @@ The converter therefore has two modes:
 
 If you need header cells, column resizing or merged cells, a third-party module such as quill-table-better adds them, but it uses its own Delta format. Map `DocTable` to that module's documented format rather than to `{ table: rowId }`.
 
+## Footnotes
+
+Footnotes need md-to-rich 2.1.0 or later. Older versions have no `footnoteReference` or `footnoteDefinition` nodes, so the converter's footnote cases never run.
+
+Quill has no footnote format, so the converter writes them as plain text:
+
+- **References** become the footnote's number with `{ script: 'super' }`, Quill's superscript format, so `[^note]` shows as a raised `1`. Numbers follow the order of first reference, and a footnote referenced twice shows the same number both times.
+- **Definitions** are already at the end of the Doc Tree: referenced ones in order of first reference, then unreferenced ones. Each becomes ordinary lines, the first starting with the same superscript number and a space. Further paragraphs, lists or code in a note follow as normal lines. Unreferenced definitions are kept and numbered after the rest.
+
+The number and the note are not linked: clicking a reference does not jump to its note, and editing or deleting one in Quill does not renumber the others. The `script` format is part of the full `quill` build. With `quill/core`, register `formats/script` yourself, or Quill drops the superscript and the number appears as normal text.
+
+To separate the notes from the body, insert `{ divider: true }` before the first definition (with the `DividerBlot` from step 2), or a heading such as "Notes".
+
 ## Design notes
 
 ### Each line gets exactly one block format
@@ -319,6 +362,10 @@ A Quill line is a single block, so it cannot be a heading *and* a quote, or a li
 
 Code lines carry the fence's info string, or `'plain'` when there is none, because that is what the full `quill` build reports back from `getContents()`. With the syntax module enabled, a language missing from its `languages` list is shown unhighlighted, so map short names such as `ts` to `typescript` first if you use it.
 
+### Ordered lists always start at 1
+
+Quill 2 stores only `{ list: 'ordered' }` on each line and numbers items with CSS counters, so every ordered list starts at 1. There is no start attribute, so the converter ignores `DocList.start`: a list written as `3. item` shows as `1. item` in Quill.
+
 ### Unsafe URLs are replaced
 
 `toDocTree()` already replaces unsafe link and image URLs with `#` (since md-to-rich 2.0.1). `safeUrl()` checks them again as a second layer: it allow-lists `http`, `https`, `mailto`, `tel` and relative URLs and turns anything else, such as `javascript:` or `data:`, into `#`. `toDocTree()` itself only allows `http`, `https` and `mailto`, so `tel:` links already arrive as `#`; widen both if you need them.
@@ -327,7 +374,7 @@ Code lines carry the fence's info string, or `'plain'` when there is none, becau
 
 ### Does the Delta round-trip through Quill unchanged?
 
-Yes. Tested with Quill 2.0.3: after `quill.setContents(delta)`, `quill.getContents()` returns the same operations for every node type, in both table modes. Adjacent lists or code blocks share one container in the DOM, but each line keeps its own format.
+Yes. Tested with Quill 2.0.3 and md-to-rich 2.1.0: after `quill.setContents(delta)`, `quill.getContents()` returns the same operations for every node type, footnotes included, in both table modes. Adjacent lists or code blocks share one container in the DOM, but each line keeps its own format.
 
 ### Why is my horizontal rule missing?
 

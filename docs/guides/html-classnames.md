@@ -85,7 +85,7 @@ const html = toHtml(markdownContent, {
 
 - The class string is injected verbatim as the `class` attribute value. You can include multiple space-separated classes.
 - Elements that already have attributes (e.g., `<a href="...">`) will have the `class` attribute appended.
-- Fenced code blocks with a language already carry `class="language-…"` on `<code>`, so a `classNames.code` value adds a second `class` attribute that browsers ignore. Style those blocks through `classNames.pre` instead.
+- Fenced code blocks with a language combine both classes on `<code>`: `class="language-ts mono"` (since 2.1.0; earlier versions emitted a second `class` attribute that browsers ignored).
 - Heading `id` attributes (from `headingIds: true`) are not affected by `classNames`.
 
 ## FAQ
