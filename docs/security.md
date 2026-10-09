@@ -1,11 +1,13 @@
 ---
 id: security
-title: Security
+title: "Security: URL Sanitisation and XSS Protection"
 sidebar_label: Security
-description: URL sanitisation, blocked protocols (javascript:, data:, vbscript:), and XSS considerations for md-to-rich HTML output. Always-on protection with no configuration required.
+description: "How md-to-rich keeps generated HTML safe: always-on URL sanitisation, blocked javascript:, data:, and vbscript: links, and raw HTML stripping by default."
 ---
 
 # Security
+
+md-to-rich treats Markdown as untrusted input by default: dangerous link protocols are removed and raw HTML is stripped, with no configuration required.
 
 ## URL Sanitisation
 
@@ -62,3 +64,8 @@ Click me: <a href="javascript:alert(document.cookie)">link</a>
 :::
 
 By default (`allowRawHtml: false`), raw HTML nodes in Markdown are stripped from the output entirely.
+
+## Related
+
+- [toHtml() API](/docs/api/to-html): the allowRawHtml option and its risks
+- [toDocTree() API](/docs/api/to-doc-tree): sanitised URLs in JSON output

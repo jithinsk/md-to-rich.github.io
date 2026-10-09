@@ -1,8 +1,8 @@
 ---
 id: remark-plugins
-title: remark Plugins
+title: Use remark Plugins with md-to-rich
 sidebar_label: remark Plugins
-description: Inject remark plugins into the md-to-rich pipeline to transform the MDAST before serialization. Examples with uppercaseHeadings, remark-frontmatter, and more.
+description: Add remark plugins to the md-to-rich pipeline to transform the Markdown AST before it is serialised. Examples with remark-frontmatter and a custom plugin.
 ---
 
 # remark Plugins
@@ -88,3 +88,8 @@ const html = toHtml(markdownWithFrontmatter, {
 - Plugins receive the full MDAST `Root` and can mutate it freely.
 - Plugin execution order matches the array order.
 - The `gfm` option controls `remark-gfm` separately from `remarkPlugins` — you can disable GFM and still add custom plugins.
+
+## Related
+
+- [Custom Serializer guide](/docs/guides/custom-serializer): write your own output format
+- [toHtml() API](/docs/api/to-html): the remarkPlugins option alongside the other HTML options

@@ -1,8 +1,8 @@
 ---
 id: to-html
-title: toHtml()
+title: "toHtml(): Convert Markdown to HTML in TypeScript"
 sidebar_label: toHtml()
-description: toHtml() API reference — convert Markdown to HTML with heading IDs, custom CSS class names, GFM tables, task lists, and built-in URL sanitisation.
+description: "toHtml() API reference: convert Markdown to HTML with heading IDs, per-element CSS classes, GFM tables, task lists, and built-in URL sanitisation."
 ---
 
 # `toHtml(md, options?): string`
@@ -94,3 +94,9 @@ Setting `allowRawHtml: true` passes raw HTML nodes from the Markdown source thro
 Only enable this option when the Markdown source is fully trusted (e.g., stored in your own database, never user-supplied).
 
 :::
+
+## Related
+
+- [HTML Class Names guide](/docs/guides/html-classnames): add Tailwind or BEM classes per element
+- [Security](/docs/security): URL sanitisation and raw HTML handling
+- [remark Plugins](/docs/guides/remark-plugins): transform the Markdown before it is serialised

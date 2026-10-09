@@ -1,8 +1,8 @@
 ---
 id: serialize
-title: serialize()
+title: "serialize(): Markdown with a Custom Serializer"
 sidebar_label: serialize()
-description: serialize() API reference — generic Markdown dispatch function that works with any Serializer<T> implementation. Parse once, output to any format.
+description: "serialize() API reference: parse Markdown once and hand the AST to any Serializer<T> implementation to produce your own output format."
 ---
 
 # `serialize(md, serializer, options?): T`

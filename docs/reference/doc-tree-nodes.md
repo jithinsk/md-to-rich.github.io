@@ -1,8 +1,8 @@
 ---
 id: doc-tree-nodes
-title: Doc Tree Node Types
+title: "Doc Tree Node Types: TypeScript Reference"
 sidebar_label: Doc Tree Node Types
-description: Complete TypeScript interface reference for all DocTree node types — DocDocument, DocHeading, DocText, DocLink, DocImage, DocTable, and all union type aliases.
+description: "TypeScript reference for every Doc Tree node: DocDocument, DocHeading, DocText, DocLink, DocImage, DocTable, and the union type aliases."
 ---
 
 # Doc Tree Node Types
@@ -332,3 +332,8 @@ Output (abbreviated):
   ]
 }
 ```
+
+## Related
+
+- [toDocTree() API](/docs/api/to-doc-tree): generate a Doc Tree from Markdown
+- [ProseMirror / Slate adapter guide](/docs/guides/prosemirror-slate): map these nodes into an editor

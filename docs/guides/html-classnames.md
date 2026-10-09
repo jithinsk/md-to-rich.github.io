@@ -1,8 +1,8 @@
 ---
 id: html-classnames
-title: HTML Class Names
+title: Add CSS Classes (Tailwind, BEM) to Markdown HTML
 sidebar_label: HTML Class Names
-description: Inject custom CSS class names per HTML element using the classNames option in toHtml(). Includes Tailwind CSS and BEM examples for every supported element.
+description: Add CSS class names to each HTML element md-to-rich generates with the classNames option. Includes Tailwind CSS and BEM examples for every element.
 ---
 
 # HTML Class Names
@@ -86,3 +86,8 @@ const html = toHtml(markdownContent, {
 - The class string is injected verbatim as the `class` attribute value. You can include multiple space-separated classes.
 - Elements that already have attributes (e.g., `<a href="...">`) will have the `class` attribute appended.
 - Heading `id` attributes (from `headingIds: true`) are not affected by `classNames`.
+
+## Related
+
+- [toHtml() API](/docs/api/to-html): every HTML option
+- [Security](/docs/security): what is sanitised in the generated HTML

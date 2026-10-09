@@ -1,8 +1,8 @@
 ---
 id: custom-serializer
-title: Custom Serializer
+title: Build a Custom Markdown Serializer in TypeScript
 sidebar_label: Custom Serializer
-description: Build a custom Serializer<T> for md-to-rich in 4 steps. Full examples for a PlainText extractor and a WordCount serializer with typed options.
+description: Build your own Serializer<T> for md-to-rich in four steps, with full examples for a plain-text extractor and a word-count serializer with typed options.
 ---
 
 # Building a Custom Serializer
@@ -157,3 +157,9 @@ const MySerializer: Serializer<string[]> = {
 ```
 
 `unist-util-visit` is a peer of `remark` (transitively included when you install `md-to-rich`).
+
+## Related
+
+- [serialize() API](/docs/api/serialize): the dispatch function that runs your serializer
+- [remark Plugins](/docs/guides/remark-plugins): transform the AST before your serializer sees it
+- [Doc Tree Node Types](/docs/reference/doc-tree-nodes): a ready-made JSON output to compare against

@@ -1,8 +1,8 @@
 ---
 id: to-ansi
-title: toAnsi()
+title: "toAnsi(): Render Markdown in the Terminal"
 sidebar_label: toAnsi()
-description: toAnsi() API reference — convert Markdown to ANSI-escaped terminal output with configurable columns, custom themes, word-wrap, and OSC 8 hyperlink support.
+description: "toAnsi() API reference: render Markdown as ANSI terminal output in Node.js, with word-wrap, custom themes, box-drawing tables, and OSC 8 hyperlinks."
 ---
 
 # `toAnsi(md, options?): string`

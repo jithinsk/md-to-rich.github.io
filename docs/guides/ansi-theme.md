@@ -1,8 +1,8 @@
 ---
 id: ansi-theme
-title: ANSI Theme
+title: Customise ANSI Terminal Colours and Theme
 sidebar_label: ANSI Theme
-description: Customise the ANSI terminal theme in toAnsi() using the AnsiTheme interface. Override headings, bullets, HR characters, and colours with monochrome and fun theme examples.
+description: "Customise toAnsi() terminal output with the AnsiTheme interface: override heading, bullet, rule, and colour styles, with monochrome and colourful examples."
 ---
 
 # ANSI Theme
@@ -90,3 +90,8 @@ Common ANSI escape sequences for building themes:
 | Blue fg | `\x1b[34m` | `\x1b[39m` |
 | Cyan fg | `\x1b[36m` | `\x1b[39m` |
 | Reset all | `\x1b[0m` | — |
+
+## Related
+
+- [toAnsi() API](/docs/api/to-ansi): all options, including columns and hyperlinks
+- [Playground](/playground): preview ANSI output in the browser

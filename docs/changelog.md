@@ -2,7 +2,7 @@
 id: changelog
 title: Changelog
 sidebar_label: Changelog
-description: md-to-rich version history and release notes. Follow Keep a Changelog format with Semantic Versioning.
+description: md-to-rich release notes and version history, following the Keep a Changelog format and Semantic Versioning. See what changed in each release.
 ---
 
 # Changelog

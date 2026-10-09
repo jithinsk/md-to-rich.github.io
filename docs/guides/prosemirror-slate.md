@@ -1,8 +1,8 @@
 ---
 id: prosemirror-slate
-title: ProseMirror / Slate Adapter Guide
+title: Convert Markdown to ProseMirror, Slate, and Quill
 sidebar_label: ProseMirror / Slate
-description: Map md-to-rich DocTree output to ProseMirror nodes, Slate elements, and Quill Delta operations. Complete TypeScript adapter examples with flat inline mark handling.
+description: Convert Markdown to ProseMirror nodes, Slate elements, and Quill Delta operations by mapping the md-to-rich Doc Tree. TypeScript adapter examples included.
 ---
 
 # ProseMirror / Slate Adapter Guide
@@ -170,3 +170,8 @@ function toQuillDelta(md: string) {
   return { ops }
 }
 ```
+
+## Related
+
+- [toDocTree() API](/docs/api/to-doc-tree): options and output shape
+- [Doc Tree Node Types](/docs/reference/doc-tree-nodes): every node and mark your adapter must handle

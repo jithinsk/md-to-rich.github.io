@@ -1,12 +1,14 @@
 ---
 id: getting-started
-title: Getting Started
+title: "Getting Started: Install and Convert Markdown"
 sidebar_label: Getting Started
 slug: /getting-started
-description: Install md-to-rich and convert Markdown to HTML, ANSI terminal output, or a Doc Tree in seconds. Quick start guide with examples for all three built-in serializers.
+description: Install md-to-rich and convert Markdown to HTML, ANSI terminal output, or a Doc Tree in a few lines. Quick-start examples for all three serializers.
 ---
 
 # Getting Started
+
+md-to-rich is a TypeScript library that converts Markdown into three formats: an HTML string, ANSI-styled terminal output, and a typed JSON Doc Tree for rich-text editors such as ProseMirror, Slate, and Quill. It runs on Node.js 20+ and ships ESM and CommonJS builds.
 
 ## Install
 

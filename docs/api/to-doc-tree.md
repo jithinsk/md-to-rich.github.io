@@ -1,8 +1,8 @@
 ---
 id: to-doc-tree
-title: toDocTree()
+title: "toDocTree(): Markdown to Rich-Text JSON Tree"
 sidebar_label: toDocTree()
-description: toDocTree() API reference — convert Markdown to a typed DocDocument JSON tree, ready to map into ProseMirror, Slate, Quill, or any rich-text editor schema.
+description: "toDocTree() API reference: convert Markdown to a typed DocDocument JSON tree, ready to map into ProseMirror, Slate, Quill, or any rich-text editor."
 ---
 
 # `toDocTree(md, options?): DocDocument`
@@ -106,3 +106,7 @@ function collectText(doc: DocDocument): string[] {
 - `DocTableRow.isHeader` is `true` for the first row (the header row) in a GFM table.
 
 See [Doc Tree Node Types](/docs/reference/doc-tree-nodes) for the complete type reference.
+
+## Related
+
+- [ProseMirror / Slate adapter guide](/docs/guides/prosemirror-slate): map the tree into editor documents
