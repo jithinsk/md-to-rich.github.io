@@ -248,96 +248,13 @@
   box-sizing: border-box;
 }
 
-/* HTML preview */
+/* HTML preview (an iframe; element styles live in its srcdoc) */
 .htmlPreview {
   flex: 1;
   width: 100%;
   min-width: 0;
-  overflow: auto;
-  padding: 1.5rem;
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  box-sizing: border-box;
-}
-
-.htmlPreview h1,
-.htmlPreview h2,
-.htmlPreview h3,
-.htmlPreview h4 {
-  margin-top: 1.25rem;
-  margin-bottom: 0.5rem;
-  line-height: 1.3;
-}
-
-.htmlPreview p {
-  margin: 0.75rem 0;
-}
-
-.htmlPreview a {
-  color: var(--ifm-color-primary);
-}
-
-.htmlPreview table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 1rem 0;
-}
-
-.htmlPreview th,
-.htmlPreview td {
-  border: 1px solid var(--ifm-color-emphasis-300);
-  padding: 0.4rem 0.75rem;
-  text-align: left;
-}
-
-.htmlPreview th {
-  background: var(--ifm-background-surface-color);
-  font-weight: 600;
-}
-
-.htmlPreview blockquote {
-  border-left: 4px solid var(--ifm-color-emphasis-300);
-  margin: 1rem 0;
-  padding: 0.5rem 1rem;
-  color: var(--ifm-color-emphasis-700);
-}
-
-.htmlPreview pre {
-  background: var(--ifm-background-surface-color);
-  border: 1px solid var(--ifm-color-emphasis-200);
-  border-radius: 6px;
-  padding: 1rem;
-  overflow: auto;
-  font-size: 0.85rem;
-}
-
-.htmlPreview code {
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.875em;
-  background: var(--ifm-color-emphasis-100);
-  padding: 0.1em 0.35em;
-  border-radius: 3px;
-}
-
-.htmlPreview pre code {
+  border: 0;
   background: transparent;
-  padding: 0;
-}
-
-.htmlPreview ul,
-.htmlPreview ol {
-  padding-left: 1.5rem;
-  margin: 0.5rem 0;
-}
-
-.htmlPreview li {
-  margin: 0.25rem 0;
-}
-
-.htmlPreview hr {
-  border: none;
-  border-top: 1px solid var(--ifm-color-emphasis-200);
-  margin: 1.5rem 0;
 }
 
 /* ANSI note banner */
@@ -377,4 +294,35 @@
   background: color-mix(in srgb, var(--ifm-color-danger) 10%, transparent);
   font-size: 0.875rem;
   flex-shrink: 0;
+}
+
+/* About section */
+.about {
+  max-width: 760px;
+  margin: 3rem auto 1rem;
+}
+
+.about h2 {
+  font-size: 1.4rem;
+}
+
+/* Comfortable tap targets on touch screens */
+@media (pointer: coarse) {
+  .convertBtn,
+  .resetBtn,
+  .copyBtn,
+  .formatTab,
+  .subTab {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .liveToggle {
+    min-height: 44px;
+  }
+
+  .liveToggle input {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 }
