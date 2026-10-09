@@ -335,7 +335,7 @@ These rules were checked by loading the output for a sample covering every node 
 
 ### Check link and image URLs
 
-Since md-to-rich 2.0.1, `toDocTree()` replaces dangerous link and image URLs with `#`. The converter checks them again as a second layer, which also protects you on older versions, where `[a](javascript:alert(1))` arrived as `url: 'javascript:alert(1)'`. `safeUrl()` allow-lists `http`, `https`, `mailto` and `tel`, keeps relative URLs and `#fragment` links, and replaces any other scheme (`javascript:`, `data:`, `vbscript:` and so on) with `#`. It strips spaces and control characters before checking, so `java script:` is caught too. Extend the allow-list if your editor needs other schemes.
+Since md-to-rich 2.0.1, `toDocTree()` replaces dangerous link and image URLs with `#`. The converter checks them again as a second layer, which also protects you on older versions, where `[a](javascript:alert(1))` arrived as `url: 'javascript:alert(1)'`. `safeUrl()` allow-lists `http`, `https`, `mailto` and `tel`, keeps relative URLs and `#fragment` links, and replaces any other scheme (`javascript:`, `data:`, `vbscript:` and so on) with `#`. It strips spaces and control characters before checking, so `java script:` is caught too. Extend the allow-list if your editor needs other schemes. `toDocTree()` itself only allows `http`, `https` and `mailto`, so `tel:` links already arrive as `#`; widen both if you need them.
 
 ## FAQ
 

@@ -85,7 +85,29 @@ const html = toHtml(markdownContent, {
 
 - The class string is injected verbatim as the `class` attribute value. You can include multiple space-separated classes.
 - Elements that already have attributes (e.g., `<a href="...">`) will have the `class` attribute appended.
+- Fenced code blocks with a language already carry `class="language-…"` on `<code>`, so a `classNames.code` value adds a second `class` attribute that browsers ignore. Style those blocks through `classNames.pre` instead.
 - Heading `id` attributes (from `headingIds: true`) are not affected by `classNames`.
+
+## FAQ
+
+### How do I style Markdown HTML without adding classes to every element?
+
+`toHtml()` returns an HTML fragment with no wrapper element, so put it inside your own container and style descendants from there, for example `.article h2 { … }`. With Tailwind CSS, a `<div class="prose">` wrapper from the Typography plugin styles the whole fragment without any `classNames`.
+
+### Can I add attributes other than class, such as target="_blank" or rel?
+
+Not through options: `classNames` only sets the `class` attribute, and `toHtml()` has no other per-element attribute option. Post-process the HTML string, or write a [custom serializer](/docs/guides/custom-serializer).
+
+```typescript
+const html = toHtml(md).replace(
+  /<a href="(https?:\/\/[^"]*)"/g,
+  '<a href="$1" target="_blank" rel="noopener noreferrer"',
+)
+```
+
+### Can I add a class to task-list checkboxes or line breaks?
+
+No. `input` and `br` aren't in the `HtmlElement` union, so `toHtml()` always emits a class-less `<input type="checkbox" disabled>` (plus `checked` for done items) and `<br>`. Target them with CSS selectors such as `li > input[type="checkbox"]` instead.
 
 ## Related
 

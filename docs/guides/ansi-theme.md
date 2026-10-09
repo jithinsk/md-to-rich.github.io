@@ -22,16 +22,16 @@ interface AnsiStyle {
 
 | Key | Type | Default effect |
 |---|---|---|
-| `h1` | `AnsiStyle` | Bold + underline (`\x1b[1;4m` / `\x1b[0m`) |
-| `h2` | `AnsiStyle` | Bold (`\x1b[1m` / `\x1b[0m`) |
-| `h3` | `AnsiStyle` | Bold (`\x1b[1m` / `\x1b[0m`) |
+| `h1` | `AnsiStyle` | Bold + underline + magenta (`\x1b[1;4;35m` / `\x1b[0m`) |
+| `h2` | `AnsiStyle` | Bold + underline + cyan (`\x1b[1;4;36m` / `\x1b[0m`) |
+| `h3` | `AnsiStyle` | Bold + cyan (`\x1b[1;36m` / `\x1b[0m`), also used for `h4`–`h6` |
 | `bold` | `AnsiStyle` | Bold (`\x1b[1m` / `\x1b[22m`) |
 | `italic` | `AnsiStyle` | Italic (`\x1b[3m` / `\x1b[23m`) |
 | `strikethrough` | `AnsiStyle` | Strikethrough (`\x1b[9m` / `\x1b[29m`) |
-| `inlineCode` | `AnsiStyle` | Reverse video (`\x1b[7m` / `\x1b[27m`) |
-| `codeBlock` | `AnsiStyle` | Box-drawing border |
-| `blockquote` | `AnsiStyle` | Dim (`\x1b[2m` / `\x1b[22m`) + `│` prefix |
-| `link` | `AnsiStyle` | Underline (`\x1b[4m` / `\x1b[24m`) |
+| `inlineCode` | `AnsiStyle` | Reverse video + yellow (`\x1b[7;33m` / `\x1b[0m`) |
+| `codeBlock` | `AnsiStyle` | Dark grey (`\x1b[90m` / `\x1b[39m`), inside a box-drawing border |
+| `blockquote` | `AnsiStyle` | Dark grey (`\x1b[90m` / `\x1b[39m`), applied to the `│` prefix |
+| `link` | `AnsiStyle` | Underline + blue (`\x1b[4;34m` / `\x1b[0m`) |
 | `listBullet` | `string` | `•` |
 | `hrChar` | `string` | `─` |
 
@@ -90,6 +90,34 @@ Common ANSI escape sequences for building themes:
 | Blue fg | `\x1b[34m` | `\x1b[39m` |
 | Cyan fg | `\x1b[36m` | `\x1b[39m` |
 | Reset all | `\x1b[0m` | — |
+
+## FAQ
+
+### Can I use 256-colour or truecolour (RGB) codes in an AnsiTheme?
+
+Yes. `open` and `close` are raw strings written as-is, so any SGR sequence works, such as `\x1b[38;5;39m` (256-colour) or `\x1b[38;2;255;135;0m` (RGB), closed with `\x1b[39m`. `toAnsi()` ignores escape sequences when it measures line width, so word-wrap stays correct.
+
+```typescript
+const theme: Partial<AnsiTheme> = {
+  h1: { open: '\x1b[1;38;2;255;135;0m', close: '\x1b[0m' }, // bold, RGB orange
+  link: { open: '\x1b[38;5;39m', close: '\x1b[39m' },       // 256-colour blue
+}
+```
+
+### Can I build an AnsiTheme with ansi-styles?
+
+Yes. Each style in the `ansi-styles` package (the module chalk uses for its codes) is an `{ open, close }` object, the same shape as `AnsiStyle`, so you can assign them directly:
+
+```typescript
+import styles from 'ansi-styles'
+import type { AnsiTheme } from 'md-to-rich'
+
+const theme: Partial<AnsiTheme> = { h1: styles.magentaBright, link: styles.cyan }
+```
+
+### Which parts of toAnsi() output can't be themed?
+
+Table borders, ordered-list numbers and `[x]`/`[ ]` task markers are always plain text, and table header cells reuse the `bold` style. The `codeBlock` style colours the whole code frame, while the `blockquote` style applies only to the `│ ` prefix, not to the quoted text.
 
 ## Related
 

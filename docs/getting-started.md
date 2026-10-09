@@ -55,7 +55,7 @@ import { toAnsi } from 'md-to-rich/ansi'
 import { toDocTree } from 'md-to-rich/doc-tree'
 ```
 
-All four sub-paths are also available from the main entry:
+All three sub-paths are also available from the main entry:
 
 ```typescript
 import { toHtml, toAnsi, toDocTree, serialize } from 'md-to-rich'
@@ -81,3 +81,19 @@ import { toHtml, toAnsi, toDocTree, serialize } from 'md-to-rich'
 - **[toDocTree() API →](/docs/api/to-doc-tree)** — JSON output shape, use cases
 - **[serialize() API →](/docs/api/serialize)** — generic dispatch, custom serializers
 - **[Custom Serializer guide →](/docs/guides/custom-serializer)** — implement `Serializer<T>`
+
+---
+
+## FAQ
+
+### Does md-to-rich work in the browser?
+
+Yes. md-to-rich and its unified and remark dependencies support browsers, and the [Playground](/playground) runs the published package client-side. `toHtml()` and `toDocTree()` work as-is. `toAnsi()` falls back to `process.stdout.columns` when `columns` is omitted, so pass `columns` explicitly in the browser.
+
+### Which Node.js versions does md-to-rich support?
+
+The package's `engines` field is `"node": ">=20.0.0"`, and CI tests every change on Node.js 20, 22 and 24.
+
+### Are toHtml(), toAnsi() and toDocTree() synchronous?
+
+Yes. All three, and `serialize()`, return their result directly rather than a Promise. Because parsing runs synchronously, remark plugins with async transformers aren't supported; see [remark Plugins](/docs/guides/remark-plugins#faq).

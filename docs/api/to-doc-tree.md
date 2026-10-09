@@ -107,6 +107,20 @@ function collectText(doc: DocDocument): string[] {
 
 See [Doc Tree Node Types](/docs/reference/doc-tree-nodes) for the complete type reference.
 
+## FAQ
+
+### Does toDocTree() keep raw HTML?
+
+No. Raw HTML in the Markdown is dropped: an HTML block disappears, and inline tags such as `<b>` are removed while the text between them stays as plain, unformatted `DocText`. Link and image URLs are sanitised like `toHtml()`'s from md-to-rich 2.0.1, so `javascript:` and `data:` URLs become `#`; see [Security](/docs/security).
+
+### Can I store toDocTree() output as JSON?
+
+Yes. A `DocDocument` is made of plain objects, arrays, strings, numbers, booleans and `null` (never `undefined`), so `JSON.parse(JSON.stringify(tree))` gives back an identical tree. That makes it safe to save in a database column or send over an API.
+
+### Does toDocTree() include heading IDs or source positions?
+
+No. `DocHeading` has only `depth` and `children`, and no node carries line or column positions. If you need heading slugs, `toHtml()` generates them with its `headingIds` option; see the [toHtml() API](/docs/api/to-html).
+
 ## Related
 
 - [Markdown to ProseMirror](/docs/guides/markdown-to-prosemirror): a complete ProseMirror adapter

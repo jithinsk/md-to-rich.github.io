@@ -95,6 +95,37 @@ Only enable this option when the Markdown source is fully trusted (e.g., stored 
 
 :::
 
+## FAQ
+
+### Is toHtml() safe for user-submitted Markdown?
+
+Yes, with the default options. `toHtml()` escapes all text, strips raw HTML such as `<script>` or `<img onerror>`, and replaces link and image URLs that use `javascript:`, `data:` or any scheme other than `http`, `https` and `mailto` with `#`. Keep `allowRawHtml` off for untrusted input; see [Security](/docs/security).
+
+### How do I add syntax highlighting to code blocks?
+
+md-to-rich doesn't highlight code. `toHtml()` emits fenced code as `<pre><code class="language-ts">…</code></pre>` with the code HTML-escaped, which is the class convention Prism and highlight.js look for, so run one of them over the output in the browser or at build time.
+
+### Can I turn off GitHub Flavored Markdown in toHtml()?
+
+Yes: pass `gfm: false` and `remark-gfm` isn't loaded. Tables then render as plain paragraphs, `- [x]` stays literal text, `~~text~~` isn't struck through, and bare URLs aren't linked.
+
+```typescript
+toHtml('~~old~~ https://example.com', { gfm: false })
+// → '<p>~~old~~ https://example.com</p>'
+```
+
+### How do I get heading IDs for a table of contents?
+
+`toHtml()` adds an `id` to every heading by default (`headingIds: true`): the heading text is lowercased, characters other than ASCII letters, digits, spaces, hyphens and underscores are removed, spaces and underscores become hyphens, and repeats get `-1`, `-2` suffixes. Read them back from the output to build a table of contents:
+
+```typescript
+const html = toHtml('# Guide\n\n## Install\n\n## Usage')
+const toc = [...html.matchAll(/<h([1-6]) id="([^"]*)"[^>]*>(.*?)<\/h\1>/g)].map(
+  ([, depth, id, inner]) => ({ depth: Number(depth), id, text: inner.replace(/<[^>]+>/g, '') }),
+)
+// → [{ depth: 1, id: 'guide', text: 'Guide' }, { depth: 2, id: 'install', ... }, ...]
+```
+
 ## Related
 
 - [HTML Class Names guide](/docs/guides/html-classnames): add Tailwind or BEM classes per element

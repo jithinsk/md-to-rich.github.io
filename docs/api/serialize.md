@@ -94,3 +94,43 @@ const tree = toDocTree(md)
 For a true parse-once multi-output pattern, implement a single `Serializer<{ html: string; tree: DocDocument }>`.
 
 See the [Custom Serializer guide](/docs/guides/custom-serializer) for full details.
+
+## FAQ
+
+### What options does serialize() pass to my serializer?
+
+`serialize()` passes the same `options` object you gave it, including `gfm` and `remarkPlugins`, or `{}` when you omit it. The `options` argument of `Serializer.serialize()` is therefore never `undefined`.
+
+### How do I get the raw MDAST tree from md-to-rich?
+
+Pass `serialize()` a serializer that returns the AST unchanged. The tree has already been through `remark-gfm` (unless `gfm: false`) and your `remarkPlugins`.
+
+```typescript
+import type { Root } from 'mdast'
+import { serialize } from 'md-to-rich'
+import type { Serializer } from 'md-to-rich'
+
+const MdastSerializer: Serializer<Root> = { serialize: (ast) => ast }
+
+const ast = serialize('# Hello', MdastSerializer)
+// ast.children[0].type === 'heading'
+```
+
+### How do I get HTML and a Doc Tree from a single parse?
+
+Combine the exported `HtmlSerializer` and `DocTreeSerializer` in one serializer, so `serialize()` parses the Markdown once and both run on the same AST.
+
+```typescript
+import type { Root } from 'mdast'
+import { serialize, HtmlSerializer, DocTreeSerializer } from 'md-to-rich'
+import type { DocDocument, HtmlOptions, Serializer } from 'md-to-rich'
+
+const HtmlAndTree: Serializer<{ html: string; tree: DocDocument }, HtmlOptions> = {
+  serialize: (ast: Root, options: HtmlOptions) => ({
+    html: HtmlSerializer.serialize(ast, options),
+    tree: DocTreeSerializer.serialize(ast, options),
+  }),
+}
+
+const { html, tree } = serialize('# Hello', HtmlAndTree)
+```

@@ -156,7 +156,21 @@ const MySerializer: Serializer<string[]> = {
 }
 ```
 
-`unist-util-visit` is a peer of `remark` (transitively included when you install `md-to-rich`).
+`unist-util-visit` is a dependency of `md-to-rich`, so it is installed with it. Add it to your own `package.json` if you import it directly.
+
+## FAQ
+
+### Should I write a custom serializer or a remark plugin?
+
+Use a [remark plugin](/docs/guides/remark-plugins) when you want to change the content but keep one of the built-in outputs (HTML, ANSI or Doc Tree). Write a `Serializer<T>` when you need a new output format, such as plain text, a word count or another editor's JSON.
+
+### Where does the Root type for a custom serializer come from?
+
+`Root` and the other MDAST node types come from the `@types/mdast` package. md-to-rich's remark dependencies already install it, but add it to your own `devDependencies` (`npm install -D @types/mdast`) so `import type { Root } from 'mdast'` doesn't rely on a transitive install.
+
+### What should my serializer do with node types it doesn't recognise?
+
+Skip them, as the built-in serializers do: `toHtml()` renders unknown nodes as an empty string and `toDocTree()` leaves them out. Ending your `switch (node.type)` with a `default` branch that returns an empty result keeps your serializer working when a remark plugin or a new Markdown feature adds node types.
 
 ## Related
 

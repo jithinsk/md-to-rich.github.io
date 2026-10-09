@@ -72,20 +72,34 @@ The built-in theme uses only inline ANSI constants — no external dependencies 
 
 | Key | Effect |
 |---|---|
-| `h1` | Bold + underline |
-| `h2` | Bold |
-| `h3` | Bold |
+| `h1` | Bold + underline + magenta |
+| `h2` | Bold + underline + cyan |
+| `h3` | Bold + cyan (also used for `h4`–`h6`) |
 | `bold` | Bold |
 | `italic` | Italic |
 | `strikethrough` | Strikethrough |
-| `inlineCode` | Reverse video |
-| `codeBlock` | Box-drawing border |
-| `blockquote` | Dim + `│` prefix |
-| `link` | Underline |
+| `inlineCode` | Reverse video + yellow |
+| `codeBlock` | Dark grey text inside a box-drawing border |
+| `blockquote` | Dark grey `│` prefix |
+| `link` | Underline + blue |
 | `listBullet` | `•` character |
 | `hrChar` | `─` character |
 
 See the [ANSI Theme guide](/docs/guides/ansi-theme) for full details and examples.
+
+## FAQ
+
+### Can I use toAnsi() without colours?
+
+`toAnsi()` always emits escape codes and doesn't read `NO_COLOR`. To get plain text, strip the codes with Node's `stripVTControlCharacters` (see [Respect NO_COLOR and piped output](/docs/guides/markdown-to-ansi-terminal#respect-no_color-and-piped-output)), or pass a `theme` whose styles all have empty `open` and `close` strings and leave `hyperlinks` off. Either way you keep the wrapping, bullets, code frames and table borders.
+
+### How does toAnsi() show links and images?
+
+By default a link prints as its label in the `link` style followed by the URL in parentheses, such as `Docs (https://example.com)`. With `hyperlinks: true` it becomes a clickable OSC 8 link that shows only the label. Images can't be drawn in a terminal, so `toAnsi()` prints `[image: alt text]` in their place, using the image's alt text.
+
+### Does toAnsi() syntax-highlight code blocks?
+
+No. `toAnsi()` draws a fenced code block inside a `┌─ code (ts)` box-drawing frame, labelled with the language when there is one, and colours every line with the single `codeBlock` theme style.
 
 ## Related
 
