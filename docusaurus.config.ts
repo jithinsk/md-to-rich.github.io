@@ -28,8 +28,8 @@ const config: Config = {
             '@type': 'Person',
             '@id': `${SITE}/#author`,
             name: 'Jithin Sebastian',
-            url: 'https://github.com/jithinsk',
-            sameAs: ['https://github.com/jithinsk', 'https://www.npmjs.com/~jithins'],
+            url: 'https://www.jithins.dev/',
+            sameAs: ['https://www.jithins.dev/', 'https://github.com/jithinsk', 'https://www.npmjs.com/~jithins'],
           },
           {
             '@type': 'WebSite',
@@ -186,7 +186,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `© ${new Date().getFullYear()} Jithin Sebastian · <a href="https://github.com/jithinsk/markdown-to-richtext/blob/main/LICENSE">MIT License</a> · <a href="https://github.com/jithinsk/markdown-to-richtext">GitHub</a>`,
+      copyright: `© ${new Date().getFullYear()} <a href="https://www.jithins.dev/">Jithin Sebastian</a> · <a href="https://github.com/jithinsk/markdown-to-richtext/blob/main/LICENSE">MIT License</a> · <a href="https://github.com/jithinsk/markdown-to-richtext">GitHub</a>`,
     },
     prism: {
       theme: prismThemes.github,
