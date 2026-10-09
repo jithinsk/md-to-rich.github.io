@@ -2,33 +2,70 @@ import { themes as prismThemes } from 'prism-react-renderer'
 import type { Config } from '@docusaurus/types'
 import type * as Preset from '@docusaurus/preset-classic'
 
+const SITE = 'https://md-to-rich.jithins.dev'
+
 const config: Config = {
   title: 'md-to-rich',
   tagline: 'Convert Markdown to HTML, ANSI terminal output, and Doc Tree',
   favicon: 'img/logo.svg',
   headTags: [
     {
+      tagName: 'link',
+      attributes: { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/img/favicon-32.png' },
+    },
+    {
+      tagName: 'link',
+      attributes: { rel: 'apple-touch-icon', sizes: '180x180', href: '/img/apple-touch-icon.png' },
+    },
+    {
       tagName: 'script',
       attributes: { type: 'application/ld+json' },
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
-        '@type': 'SoftwareApplication',
-        name: 'md-to-rich',
-        applicationCategory: 'DeveloperApplication',
-        description: 'Convert Markdown to HTML, ANSI terminal output, and Doc Tree via an extensible Serializer interface. TypeScript-first, tree-shakeable, ESM + CJS dual output.',
-        url: 'https://md-to-rich.jithins.dev/',
-        downloadUrl: 'https://www.npmjs.com/package/md-to-rich',
-        softwareVersion: '2.0.0',
-        operatingSystem: 'Node.js ≥ 20',
-        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-        author: { '@type': 'Person', name: 'Jithin Sebastian' },
-        license: 'https://opensource.org/licenses/MIT',
-        codeRepository: 'https://github.com/jithinsk/markdown-to-richtext',
+        '@graph': [
+          {
+            '@type': 'Person',
+            '@id': `${SITE}/#author`,
+            name: 'Jithin Sebastian',
+            url: 'https://github.com/jithinsk',
+            sameAs: ['https://github.com/jithinsk', 'https://www.npmjs.com/~jithins'],
+          },
+          {
+            '@type': 'WebSite',
+            '@id': `${SITE}/#website`,
+            url: `${SITE}/`,
+            name: 'md-to-rich',
+            description: 'Documentation for md-to-rich, a TypeScript library that converts Markdown to HTML, ANSI terminal output, and a typed Doc Tree.',
+            inLanguage: 'en',
+            publisher: { '@id': `${SITE}/#author` },
+          },
+          {
+            '@type': ['SoftwareApplication', 'SoftwareSourceCode'],
+            '@id': `${SITE}/#software`,
+            name: 'md-to-rich',
+            description: 'Convert Markdown to HTML, ANSI terminal output, and Doc Tree via an extensible Serializer interface. TypeScript-first, tree-shakeable, ESM + CJS dual output.',
+            url: `${SITE}/`,
+            image: `${SITE}/img/social-card.png`,
+            applicationCategory: 'DeveloperApplication',
+            operatingSystem: 'Cross-platform (Node.js 20+)',
+            programmingLanguage: 'TypeScript',
+            runtimePlatform: 'Node.js',
+            codeRepository: 'https://github.com/jithinsk/markdown-to-richtext',
+            downloadUrl: 'https://www.npmjs.com/package/md-to-rich',
+            // Kept as a literal: .github/workflows/sync-library.yml bumps it with sed.
+            softwareVersion: '2.0.0',
+            license: 'https://opensource.org/licenses/MIT',
+            isAccessibleForFree: true,
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+            author: { '@id': `${SITE}/#author` },
+            sameAs: ['https://www.npmjs.com/package/md-to-rich', 'https://github.com/jithinsk/markdown-to-richtext'],
+          },
+        ],
       }),
     },
   ],
 
-  url: 'https://md-to-rich.jithins.dev',
+  url: SITE,
   baseUrl: '/',
 
   organizationName: 'jithinsk',
@@ -51,6 +88,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/jithinsk/markdown-to-richtext/tree/main/',
           routeBasePath: 'docs',
+          showLastUpdateTime: true,
         },
         blog: false,
         theme: {
@@ -63,6 +101,19 @@ const config: Config = {
           priority: null,
         },
       } satisfies Preset.Options,
+    ],
+  ],
+
+  plugins: [
+    [
+      'docusaurus-plugin-llms',
+      {
+        description:
+          'md-to-rich is a TypeScript library that converts Markdown to HTML, ANSI terminal output, and a typed Doc Tree (JSON) for rich-text editors such as ProseMirror, Slate, and Quill.',
+        generateMarkdownFiles: true,
+        excludeImports: true,
+        includeOrder: ['getting-started.md', 'api/*', 'guides/*', 'reference/*', 'security.md', 'changelog.md'],
+      },
     ],
   ],
 
@@ -86,6 +137,8 @@ const config: Config = {
       logo: {
         alt: 'md-to-rich logo',
         src: 'img/logo.svg',
+        width: 32,
+        height: 32,
       },
       items: [
         {
