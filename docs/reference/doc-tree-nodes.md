@@ -215,7 +215,7 @@ interface DocLink {
 }
 ```
 
-`url` has already been sanitised — dangerous protocols are replaced with `#`.
+`url` is returned exactly as written in the Markdown and is **not** sanitised. Check it before rendering (see [Security](/docs/security)).
 
 ---
 
@@ -230,7 +230,7 @@ interface DocImage {
 }
 ```
 
-`url` has been sanitised.
+`url` is returned exactly as written and is **not** sanitised.
 
 ---
 
@@ -312,8 +312,8 @@ Output (abbreviated):
     },
     { "type": "blockquote", "children": [{ "type": "paragraph", "children": [{ "type": "text", "value": "Blockquote", "bold": false, "italic": false, "strikethrough": false }] }] },
     { "type": "list", "ordered": false, "children": [
-        { "type": "listItem", "checked": true, "children": [{ "type": "text", "value": "Task done", "bold": false, "italic": false, "strikethrough": false }] },
-        { "type": "listItem", "checked": false, "children": [{ "type": "text", "value": "Task pending", "bold": false, "italic": false, "strikethrough": false }] }
+        { "type": "listItem", "checked": true, "children": [{ "type": "paragraph", "children": [{ "type": "text", "value": "Task done", "bold": false, "italic": false, "strikethrough": false }] }] },
+        { "type": "listItem", "checked": false, "children": [{ "type": "paragraph", "children": [{ "type": "text", "value": "Task pending", "bold": false, "italic": false, "strikethrough": false }] }] }
       ]
     },
     { "type": "table", "align": [null, null], "children": [
@@ -336,4 +336,6 @@ Output (abbreviated):
 ## Related
 
 - [toDocTree() API](/docs/api/to-doc-tree): generate a Doc Tree from Markdown
-- [ProseMirror / Slate adapter guide](/docs/guides/prosemirror-slate): map these nodes into an editor
+- [Markdown to ProseMirror](/docs/guides/markdown-to-prosemirror): a complete ProseMirror adapter
+- [Markdown to Slate](/docs/guides/markdown-to-slate): a complete Slate converter
+- [Markdown to Quill](/docs/guides/markdown-to-quill): build a Quill Delta
