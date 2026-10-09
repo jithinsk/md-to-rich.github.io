@@ -54,7 +54,7 @@ const config: Config = {
             codeRepository: 'https://github.com/jithinsk/markdown-to-richtext',
             downloadUrl: 'https://www.npmjs.com/package/md-to-rich',
             // Kept as a literal: .github/workflows/sync-library.yml bumps it with sed.
-            softwareVersion: '2.0.0',
+            softwareVersion: '2.0.1',
             license: 'https://opensource.org/licenses/MIT',
             isAccessibleForFree: true,
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
